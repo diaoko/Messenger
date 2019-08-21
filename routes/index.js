@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-
+var messageSchema = require('../models/message').textmessage;
+var chatSchema = require('../models/chat');
 /* GET home page. */
 router.get('/v1/getAllChats', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -13,19 +14,44 @@ router.get('/v1/sendTextMessage', function(req, res, next) {
 
 /* Post Send messages. */
 router.post('/v1/sendTextMessage', function(req, res, next) {
-  var messageSchema = require('../models/message').textmessage;
-  var chat= new messageSchema({
+
+  var message= new messageSchema({
         id : req.body.message_id,
-        chat_id : req.body.chat_id,
+        type : "text_message",
         parse_mode : req.body.parse_mode,
         reply_to : req.body.reply_to,
-        message : req.body.text,
+        sender_id : 1,
+        text_message : {
+            text: req.body.text
+        },
     });
-    chat.save(function (err) {
+    message.save(function (err) {
         if(err)
+        {
             console.log('error...');
+        }
         else
-            console.log('ok......');
+        {
+            let chat = new chatSchema({
+                channel_id : "lvndfv34343jn43kn43",
+                type : "private",
+                messages : message._id,
+                users : [1,req.body.receiver_id]
+            });
+
+            chat.save(function (err) {
+                if(err)
+                {
+                    console.log("error 2")
+                }
+                else
+                {
+                    console.log('ok......');
+                    res.json({haserror:false,code:100});
+                }
+            })
+
+        }
     });
 });
 

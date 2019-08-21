@@ -3,9 +3,6 @@ var Schema = mongoose.Schema;
 
 var TextMessageSchema = new Schema({
     id : Number,
-    created_at: Date,
-    updated_at: Date,
-    deleted_at: Date,
     reply_to : Number,
     type : String,
     sender_id : Number,
@@ -13,6 +10,8 @@ var TextMessageSchema = new Schema({
         {
             text: String
         }
+},{
+    timestamps : true
 });
 var text = mongoose.model('TextMessage', TextMessageSchema,'messages');
 var voice = mongoose.model('TextMessage', TextMessageSchema,'messages');
