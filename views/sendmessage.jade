@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1= title
+  form(name="add-estimation", method="post",action="")
+    div.input
+      span.label chat id
+      input(type="text", name="chat_id")
+    div.input
+      span.label parse mode
+      input(type="text", name="parse_mode")
+    div.input
+      span.label reply to
+      input(type="text", name="reply_to")
+    div.input
+      span.label message
+      textarea(name="text", cols="40", rows="5")
+    div.actions
+      input(type="submit", value="send")
