@@ -6,8 +6,6 @@
       <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/chat.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/message.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/message.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/views/sendmessage.jade" beforeDir="false" afterPath="$PROJECT_DIR$/views/sendmessage.jade" afterDir="false" />
     </list>
@@ -79,7 +77,9 @@
       <workItem from="1566304747474" duration="880000" />
       <workItem from="1566359834811" duration="16507000" />
       <workItem from="1566384928229" duration="7988000" />
-      <workItem from="1566412722095" duration="7878000" />
+      <workItem from="1566412722095" duration="8301000" />
+      <workItem from="1566492301573" duration="11386000" />
+      <workItem from="1566572006566" duration="8563000" />
     </task>
     <servers />
   </component>
@@ -91,7 +91,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>

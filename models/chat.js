@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var privateChatSchema = new Schema({
     channel_id : String,
     type : String,
-    messages : Array,
+    messages : [{type : Schema.Types.ObjectId,ref : "Message"}],
     users : Array
 },{
     timestamps : true
@@ -25,5 +25,7 @@ var ChatSchema = new Schema({
     invite_link : String,
     messages : Array,
 });
-
-module.exports =mongoose.model('privateChat',privateChatSchema,'chats');
+chat = mongoose.model('Chat',privateChatSchema,'chats');
+module.exports ={
+    Chat : chat
+};
