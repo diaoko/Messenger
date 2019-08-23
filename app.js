@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/kubakchat',{useNewUrlParser : true});
+mongoose.connect('mongodb://127.0.0.1:27017/kubakchat',{useNewUrlParser : true , useFindAndModify: false});
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
