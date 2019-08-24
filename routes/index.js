@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var messageSchema = require('../models/message').textmessage;
+var Message = require('../models/message').textmessage;
 var Chat = require('../models/chat').Chat;
+let mapper = require('../utils/mapper');
 /* GET home page. */
 router.get('/v1/getAllChats', function(req, res, next) {
 
@@ -16,8 +17,8 @@ router.get('/v1/getAllChats', function(req, res, next) {
             sort: { 'message.created_at': Number(-1) }
             }})
         .exec(function (err, stores) {
-            if (err) return handleError(err);
-            res.json(stores);
+
+            res.json(stores.map(mapper.chatviewmodel));
             // Stores with items
         });
     //res.render('index', { title: 'Express',chats:chat });
@@ -31,15 +32,28 @@ router.get('/v1/sendTextMessage', function(req, res, next) {
 /* Post Send messages. */
 router.post('/v1/sendTextMessage', function(req, res, next) {
 
-    Chat.findOne({'type' : 'private' ,'users' : {$all :[1,req.body.reciever_id]}} ,'_id', function (err,chat) {
-        if(chat)
+    Chat.findOne({type : 'private' ,
+        $and :
+            [
+                {
+                    users : {$in :[req.body.reciever_id+'']}
+                },
+                {
+                    users :{$in :["1"]}
+                }
+            ]
+        } , function (err,chat) {
+        console.log(chat);
+        console.log(err);
+        if(chat!==null)
         {
-            var message= new messageSchema({
+
+            var message= new Message({
                 receiver_id : req.body.reciever_id,
                 type : "text_message",
                 parse_mode : req.body.parse_mode,
                 reply_to : req.body.reply_to,
-                sender_id : 1,
+                sender_id : "1",
                 text_message : {
                     text: req.body.text
                 },
@@ -60,7 +74,7 @@ router.post('/v1/sendTextMessage', function(req, res, next) {
                                 res.json({haserror:true,code:1});
 
                             } else {
-                                console.log('saved........');
+                                console.log('saved........exist');
                                 res.json({haserror:false,code:100,msg_id:message._id});
                             }
                         });
@@ -70,13 +84,13 @@ router.post('/v1/sendTextMessage', function(req, res, next) {
                 //chat.save();
             });
         }
-        if(!chat)
+        else
         {
             var newchat = new Chat({
                 channel_id : "lvndfv34343jn43kn43",
                 type : "private",
                 messages : [],
-                users : [1,req.body.receiver_id]
+                users : ["1",req.body.receiver_id]
             });
 
             newchat.save(function (err) {
@@ -86,12 +100,12 @@ router.post('/v1/sendTextMessage', function(req, res, next) {
                 }
                 else
                 {
-                    var message= new messageSchema({
+                    var message= new Message({
                         receiver_id : req.body.reciever_id,
                         type : "text_message",
                         parse_mode : req.body.parse_mode,
                         reply_to : req.body.reply_to,
-                        sender_id : 1,
+                        sender_id : "1",
                         text_message : {
                             text: req.body.text
                         },
@@ -104,8 +118,11 @@ router.post('/v1/sendTextMessage', function(req, res, next) {
                         else
                         {
                             //let saved = Chat.findById(newchat._id);
-                            chat.messages.push(message._id);
-                            chat.save();
+                            //console.log(newchat);
+                            //return;
+                            newchat.messages.push(message._id);
+                            newchat.save();
+                            console.log('saved......2');
                             res.json({haserror:true,code:100,msgg_id:message._id});
                         }
 
@@ -121,4 +138,9 @@ router.post('/v1/sendTextMessage', function(req, res, next) {
 
 });
 
+router.post('v1/getMessages',function (req,res) {
+    Chat.findById(req.body.id).populate('messages').exec(function (err,messages) {
+        res.json(messages);
+    });
+});
 module.exports = router;

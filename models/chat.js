@@ -5,7 +5,7 @@ var privateChatSchema = new Schema({
     channel_id : String,
     type : String,
     messages : [{type : Schema.Types.ObjectId,ref : "Message"}],
-    users : Array
+    users : [Schema.Types.String]
 },{
     timestamps : true
 });
