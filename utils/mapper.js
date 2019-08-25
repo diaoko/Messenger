@@ -14,12 +14,15 @@ let message = messages => {
         }
     }
 };
+
 module.exports.chatviewmodel = chat=>{
     return {
         id : chat._id,
         type : 'private',
+        first_name : 'diaoko',
+        last_name:'mahmoodi',
         unread_messages : 12,
-        avatar : {
+        chat_photo : {
           small_avatar_id : 1,
           large_avatar_id : 2,
         },
