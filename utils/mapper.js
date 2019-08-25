@@ -9,7 +9,7 @@ let message = messages => {
             first_name : 'diaoko',
             last_name : 'mahmoodi'
         },
-        'text-message' : {
+        'text_message' : {
             text: messages.text_message.text
         }
     }
