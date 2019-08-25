@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var TextMessageSchema = new Schema({
-    reply_to : Number,
+    reply_to : String,
     type : String,
-    sender_id : Number,
+    sender_id : String,
     parse_mode : String,
     text_message:
         {
