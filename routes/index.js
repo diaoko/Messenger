@@ -138,9 +138,18 @@ router.post('/v1/sendTextMessage', function(req, res, next) {
 
 });
 
-router.post('v1/getMessages',function (req,res) {
-    Chat.findById(req.body.id).populate('messages').exec(function (err,messages) {
-        res.json(messages);
-    });
+router.post('/v1/getMessages',function (req,res,next) {
+
+    Chat
+        .findOne({_id : req.body.chat_id}) // all
+        .populate({path: 'messages',options : {
+                limit : 20,
+                sort: { 'message.created_at': Number(-1) }
+            }})
+        .exec(function (err, chat) {
+            console.log(chat);
+            res.json({conversations:chat.messages.map(messageMapper.messageViewModel)});
+            // Stores with items
+        });
 });
 module.exports = router;
