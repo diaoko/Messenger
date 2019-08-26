@@ -33,56 +33,7 @@ router.get('/v1/sendTextMessage', function(req, res, next) {
 /* Post Send messages. */
 router.post('/v1/sendTextMessage', function(req, res, next) {
 
-    /*if(req.body.chat_id!==null)
-    {
-        Chat.findOne({_id : req.body.chat_id},'_id',function (err,chat) {
-        if(chat!==null)
-        {
-            var message= new Message({
-                sender_id : req.body.sender_id,
-                type : "text_message",
-                parse_mode : req.body.parse_mode,
-                reply_to : req.body.reply_to,
-                text_message : {
-                    text: req.body.text
-                },
-            });
-            message.save(function (err) {
-                if(err)
-                {
-                    res.json({haserror:true,code:0});
-                }
-                else {
-                    let message_id = [message._id];
-                    Chat.findOneAndUpdate(
-                        { _id: chat._id },
-                        { $push: { messages: message_id  } },
-                        function (error, success) {
-                            if (error) {
-                                console.log('error.........');
-                                res.json({haserror:true,code:1});
 
-                            } else {
-                                console.log('saved........exist');
-                                res.json({haserror:false,code:100, message : {message_id : message._id}});
-                            }
-                        });
-                }
-
-                //chat.messages.push(message._id);
-                //chat.save();
-            });
-        }
-        else
-        {
-            res.json({haserror:true,code:1,msg:"Chat not exist..."});
-        }
-    });
-    }
-    else
-    {
-
-    }*/
     let receiverId = `${req.body.receiver_id}`;
     Chat.findOne({type : 'private' ,
         $and :
