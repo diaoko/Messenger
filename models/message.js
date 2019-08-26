@@ -6,10 +6,15 @@ var TextMessageSchema = new Schema({
     type : String,
     sender_id : String,
     parse_mode : String,
-    text_message:
+    voice:
         {
-            text: String
+            file_id: String
+        },
+    text_message :
+        {
+            text:String
         }
+
 },{
     timestamps : true
 });
