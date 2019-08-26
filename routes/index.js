@@ -15,7 +15,7 @@ router.post('/v1/getAllChats', function(req, res, next) {
         .find({}) // all
         .populate({path: 'messages',options : {
             limit : 1,
-            sort: { 'message.created_at': Number(-1) }
+            sort: { 'createdAt': Number(-1) }
             }})
         .exec(function (err, chats) {
 
@@ -197,8 +197,7 @@ router.post('/v1/getMessages',function (req,res,next) {
     Chat
         .findOne({_id : req.body.chat_id}) // all
         .populate({path: 'messages',options : {
-                limit : 20,
-                sort: { 'message.created_at': Number(-1) }
+                sort: { 'createdAt': -1 }
             }})
         .exec(function (err, chat) {
             console.log(chat);
