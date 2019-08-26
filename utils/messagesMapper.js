@@ -3,6 +3,7 @@ module.exports.messageViewModel =  messages => {
     return {
         messages_id: messages.id,
         type : messages.type,
+        time : messages.createdAt,
         sender : {
             id : '1dc4d7rf5vv5fvs',
             type : 'user',

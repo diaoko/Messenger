@@ -2,6 +2,7 @@ let message = messages => {
     return {
         messages_id: messages.id,
         type : messages.type,
+        time: messages.createdAt,
         sender : {
             id : '1dc4d7rf5vv5fvs',
             type : 'user',
@@ -12,6 +13,7 @@ let message = messages => {
         'text_message' : {
             text: messages.text_message.text
         }
+
     }
 };
 
