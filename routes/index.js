@@ -2,8 +2,10 @@ var express = require('express');
 var router = express.Router();
 var Message = require('../models/message').textmessage;
 var Chat = require('../models/chat').Chat;
+var File = require('../models/file');
 let mapper = require('../utils/mapper');
 let messageMapper = require('../utils/messagesMapper');
+const shortid = require('shortid');
 /* GET home page. */
 router.post('/v1/getAllChats', function(req, res, next) {
 
