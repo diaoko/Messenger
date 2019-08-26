@@ -79,7 +79,18 @@ router.post('/v1/sendTextMessage', function(req, res, next) {
 
                             } else {
                                 console.log('saved........exist');
-                                res.json({haserror:false,code:100,conversation :{message_id:message._id}});
+                                res.json({haserror:false,code:100,conversation :{    message_id: message.id,
+                                        type : message.type,
+                                        sender : {
+                                            id : '1dc4d7rf5vv5fvs',
+                                            type : 'user',
+                                            username: 'diaoko89',
+                                            first_name : 'diaoko',
+                                            last_name : 'mahmoodi'
+                                        },
+                                        'text_message' : {
+                                            text: message.text_message.text
+                                        }}});
                             }
                         });
                 }
@@ -128,7 +139,18 @@ router.post('/v1/sendTextMessage', function(req, res, next) {
                             newchat.messages.push(message._id);
                             newchat.save();
                             console.log('saved......2');
-                            res.json({haserror:true,code:100,conversation : {message_id:message._id}});
+                            res.json({haserror:true,code:100,conversation : {    message_id: message.id,
+                                    type : message.type,
+                                    sender : {
+                                        id : '1dc4d7rf5vv5fvs',
+                                        type : 'user',
+                                        username: 'diaoko89',
+                                        first_name : 'diaoko',
+                                        last_name : 'mahmoodi'
+                                    },
+                                    'text_message' : {
+                                        text: message.text_message.text
+                                    }}});
                         }
 
                     });
