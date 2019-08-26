@@ -94,7 +94,7 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                                             first_name: 'diaoko',
                                                             last_name: 'mahmoodi'
                                                         },
-                                                        'voice': {
+                                                        voice: {
                                                             file_id: file._id
                                                         }
                                                     }
@@ -106,7 +106,7 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                 //chat.messages.push(message._id);
                                 //chat.save();
                             });
-                            res.status(400).send({haserror: false, code: 100});
+                            //res.status(400).send({haserror: false, code: 100});
                         });
 
                     }
@@ -192,7 +192,7 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                                                 first_name: 'diaoko',
                                                                 last_name: 'mahmoodi'
                                                             },
-                                                            'voice': {
+                                                            voice: {
                                                                 file_id: file._id
                                                             }
                                                         }
