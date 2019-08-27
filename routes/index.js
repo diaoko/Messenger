@@ -20,8 +20,10 @@ router.post('/v1/getAllChats', function(req, res, next) {
             sort: { 'createdAt': Number(-1) }
             }})
         .exec(function (err, chats) {
-
-            res.json({chats : chats.map(mapper.chatviewmodel)});
+            if(chats!=null)
+                res.json({chats : chats.map(mapper.chatviewmodel)});
+            else
+                res.json({haserror:true,code:11,msg:'chats not found'});
             // Stores with items
         });
     //res.render('index', { title: 'Express',chats:chat });
@@ -176,7 +178,10 @@ router.post('/v1/getMessages',function (req,res,next) {
             }})
         .exec(function (err, chat) {
             console.log(chat);
-            res.json({conversations:chat.messages.map(messageMapper.messageViewModel)});
+            if(chat!=null)
+                res.json({conversations:chat.messages.map(messageMapper.messageViewModel)});
+            else
+                res.json({hasserror:true,code:11,msg: 'chat not found...'})
             // Stores with items
         });
 });

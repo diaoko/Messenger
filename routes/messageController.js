@@ -11,7 +11,13 @@ const { getAudioDurationInSeconds } = require('get-audio-duration');
 /* Post Send messages. */
 
 router.post('/v1/sendVoiceMessage',function (req,res,next) {
+    if(req.body.sender_id==null || req.body.receiver_id==null || req.body.reply_to==null)
+    {
+        console.log('errooooorrrrrr....');
+        return
+    }
     let receiverId = `${req.body.receiver_id}`;
+    let senderId = `${req.body.sender_id}`;
     Chat.findOne({
         type: 'private',
         $and:
@@ -20,7 +26,7 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                     users: {$in: [receiverId]}
                 },
                 {
-                    users: {$in: ["1"]}
+                    users: {$in: [senderId]}
                 }
             ]
     }, function (err, chat) {
@@ -46,9 +52,11 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                     else {
                         var file_duration = 0;
                         getAudioDurationInSeconds(path + filename).then((duration) => {
-                            file_duration = duration;
+                            file_duration = Math.round(duration);
+
                             console.log(file_duration);
                         });
+                        console.log(file_duration);
                         var file = new File({
                             type: 'voice',
                             path: path + filename,
@@ -121,7 +129,7 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                 channel_id: "lvndfv34343jn43kn43",
                 type: "private",
                 messages: [],
-                users: ["1", req.body.receiver_id]
+                users: [senderId, receiverId]
             });
 
             newchat.save(function (err) {
@@ -147,7 +155,7 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                 else {
                                     var file_duration = 0;
                                     getAudioDurationInSeconds(path + filename).then((duration) => {
-                                        file_duration = duration;
+                                        file_duration = Math.round(duration);
                                     });
                                     var file = new File({
                                         type: 'voice',

@@ -5,7 +5,7 @@ let fileSchema = new Schema({
     type : String,
     path : String,
     size : String,
-    duration: {type:Number , required: false},
+    duration: String,
 });
 
 module.exports = mongoose.model('File',fileSchema,'Files');
