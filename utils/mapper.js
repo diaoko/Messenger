@@ -1,4 +1,5 @@
-let message = messages => {
+/*let message = messages => {
+
     return {
         messages_id: messages.id,
         type : messages.type,
@@ -15,8 +16,8 @@ let message = messages => {
         }
 
     }
-};
-
+};*/
+var message = require('./messagesMapper');
 module.exports.chatviewmodel = chat=>{
     return {
         id : chat._id,
@@ -28,6 +29,6 @@ module.exports.chatviewmodel = chat=>{
           small_avatar_id : 1,
           large_avatar_id : 2,
         },
-            conversations: chat.messages.map(message)
+            conversations: chat.messages.map(message.messageViewModel)
     }
 };
