@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var Message = require('../models/message').voicemessage;
+var Message = require('../models/message');
 var Chat = require('../models/chat').Chat;
 var File = require('../models/file');
 let mapper = require('../utils/mapper');
@@ -70,9 +70,8 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                 parse_mode: req.body.parse_mode,
                                 reply_to: req.body.reply_to,
                                 sender_id: req.body.sender_id,
-                                voice: {
-                                    file_id: file._id
-                                },
+                                file: file._id
+
                             });
                             message.save(function (err) {
                                 if (err) {
@@ -175,9 +174,8 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                                 parse_mode: req.body.parse_mode,
                                                 reply_to: req.body.reply_to,
                                                 sender_id: req.body.sender_id,
-                                                voice: {
-                                                    file_id: file._id
-                                                }
+                                                file: file._id
+
                                             });
                                             message.save(function (err) {
                                                 if (err) {

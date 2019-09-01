@@ -33,9 +33,12 @@ module.exports.messageViewModel =  messages => {
                 first_name : 'diaoko',
                 last_name : 'mahmoodi'
             },
-            voice : {
-                file_id: messages.voice.file_id
+            voice_message : {
+                file_id: messages.file._id,
+                type : messages.file.type,
+                duration : messages.file.duration,
+                size : messages.file.size
             }
         }
     }
-};;
+};

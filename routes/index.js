@@ -18,7 +18,9 @@ router.post('/v1/getAllChats', function(req, res, next) {
         .populate({path: 'messages',options : {
             limit : 1,
             sort: { 'createdAt': Number(-1) }
-            }})
+            },
+            populate: { path : 'file' , model : 'File'}
+        })
         .exec(function (err, chats) {
             if(chats!=null)
                 res.json({chats : chats.map(mapper.chatviewmodel)});
@@ -173,9 +175,17 @@ router.post('/v1/getMessages',function (req,res,next) {
 
     Chat
         .findOne({_id : req.body.chat_id}) // all
-        .populate({path: 'messages',options : {
+        .populate({
+                path: 'messages',
+                options : {
                 sort: { 'createdAt': -1 }
-            }})
+            },
+              populate : {
+                    path : 'file',
+                    model : 'File'
+              }
+            },
+             )
         .exec(function (err, chat) {
             console.log(chat);
             if(chat!=null)

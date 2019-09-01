@@ -6,10 +6,7 @@ var TextMessageSchema = new Schema({
     type : String,
     sender_id : String,
     parse_mode : String,
-    voice:
-        {
-            file_id: String
-        },
+    file : {type : Schema.Types.ObjectId , ref : 'File'},
     text_message :
         {
             text:String
@@ -31,9 +28,11 @@ var voiceMessageSchema = new Schema({
 },{
     timestamps : true
 });
-var text = mongoose.model('Message', TextMessageSchema,'messages');
-var voice = mongoose.model('VoiceMessage', voiceMessageSchema,'messages');
+module.exports= mongoose.model('Message', TextMessageSchema,'messages');
+//var voice = mongoose.model('VoiceMessage', voiceMessageSchema,'messages');
+/*
 module.exports = {
     textmessage: text,
     voicemessage : voice
 };
+*/
