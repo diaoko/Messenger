@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Message = require('../models/message');
-var Chat = require('../models/chat').Chat;
+var Chat = require('../models/chat');
 var File = require('../models/file');
 let mapper = require('../utils/mapper');
 let messageMapper = require('../utils/messagesMapper');
@@ -131,8 +131,12 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                                             first_name: 'diaoko',
                                                             last_name: 'mahmoodi'
                                                         },
-                                                        voice: {
-                                                            file_id: file._id
+                                                        voice_message: {
+                                                            file_id: file._id,
+                                                            type : file.type,
+                                                            duration : file.duration,
+                                                            size : file.size,
+
                                                         }
                                                     }
                                                 });
@@ -228,26 +232,21 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                                                 first_name: 'diaoko',
                                                                 last_name: 'mahmoodi'
                                                             },
-                                                            voice: {
-                                                                file_id: file._id
+                                                            voice_message: {
+                                                                file_id: file._id,
+                                                                type : file.type,
+                                                                duration : file.duration,
+                                                                size : file.size,
                                                             }
                                                         }
                                                     });
-
                                                 }
 
                                             });
                                         }
-
-
                                     });
-
-
                                 }
-
-
                             });
-
                         });
                     }
                 }

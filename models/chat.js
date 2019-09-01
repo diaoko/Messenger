@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var privateChatSchema = new Schema({
+let privateChatSchema = new Schema({
     channel_id : String,
     type : String,
     messages : [{type : Schema.Types.ObjectId,ref : "Message"}],
@@ -10,7 +10,7 @@ var privateChatSchema = new Schema({
     timestamps : true
 });
 
-var ChatSchema = new Schema({
+let ChatSchema = new Schema({
     channel_id : String,
     type : String,
     title : String,
@@ -25,7 +25,5 @@ var ChatSchema = new Schema({
     invite_link : String,
     messages : Array,
 });
-chat = mongoose.model('Chat',privateChatSchema,'chats');
-module.exports ={
-    Chat : chat
-};
+
+module.exports = mongoose.model('Chat',privateChatSchema,'chats');
