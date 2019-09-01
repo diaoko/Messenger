@@ -9,7 +9,37 @@ const shortid = require('shortid');
 const fs = require('fs');
 const { getAudioDurationInSeconds } = require('get-audio-duration');
 /* Post Send messages. */
-
+/**
+ * End Point = /v1/sendVoiceMessage
+ * Method = POST
+ * Parameters :
+ *             receiver_id(required)
+ *             sender_id(required|)
+ *             parse_mode(optional|string)
+ *             reply_to(optional|string)
+ *             voice(required|file)
+ *
+ * Response :
+ * {
+    "haserror": false,
+    "code": 100,
+    "conversation": {
+        "message_id": "5d6bc1d17a036243b00592a2",
+        "type": "text_message",
+        "sender": {
+            "id": "1dc4d7rf5vv5fvs",
+            "type": "user",
+            "username": "diaoko89",
+            "first_name": "diaoko",
+            "last_name": "mahmoodi"
+        },
+        "text_message": {
+            "text": "hello"
+        }
+    }
+}
+ *
+ */
 router.post('/v1/sendVoiceMessage',function (req,res,next) {
     if(req.body.sender_id==null || req.body.receiver_id==null || req.body.reply_to==null)
     {

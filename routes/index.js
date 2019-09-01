@@ -1,12 +1,55 @@
 var express = require('express');
 var router = express.Router();
-var Message = require('../models/message').textmessage;
+var Message = require('../models/message');
 var Chat = require('../models/chat').Chat;
-var File = require('../models/file');
+var myFile = require('../models/file');
 let mapper = require('../utils/mapper');
 let messageMapper = require('../utils/messagesMapper');
 const shortid = require('shortid');
+const { check, validationResult } = require('express-validator');
 /* GET home page. */
+/**
+ * End Point = /v1/getAllChats
+ * Method = POST
+ *
+ * Response :
+ *
+ * {
+    "chats": [
+        {
+            "id": "5d6b6d118446212a783d6392",
+            "type": "private",
+            "first_name": "diaoko",
+            "last_name": "mahmoodi",
+            "unread_messages": 12,
+            "chat_photo": {
+                "small_avatar_id": 1,
+                "large_avatar_id": 2
+            },
+            "conversations": [
+                {
+                    "messages_id": "5d6b6d118446212a783d6394",
+                    "type": "voice",
+                    "time": "2019-09-01T07:02:41.209Z",
+                    "sender": {
+                        "id": "1dc4d7rf5vv5fvs",
+                        "type": "user",
+                        "username": "diaoko89",
+                        "first_name": "diaoko",
+                        "last_name": "mahmoodi"
+                    },
+                    "voice_message": {
+                        "file_id": "5d6b6d118446212a783d6393",
+                        "type": "voice",
+                        "duration": "380",
+                        "size": "6126555"
+                    }
+                }
+            ]
+        }
+    ]
+}
+ */
 router.post('/v1/getAllChats', function(req, res, next) {
 
     /*Chat.find({},function (err,chats) {
@@ -31,61 +74,151 @@ router.post('/v1/getAllChats', function(req, res, next) {
     //res.render('index', { title: 'Express',chats:chat });
 });
 
-/* get Send messages. */
-router.get('/v1/sendTextMessage', function(req, res, next) {
-  res.render('sendmessage', { title: 'Express' });
-});
+
 
 /* Post Send messages. */
-router.post('/v1/sendTextMessage', function(req, res, next) {
+/**
+ * End Point = /v1/sendTextMessage
+ * Method = POST
+ * Parameters :
+ *             receiver_id(required)
+ *             sender_id(required)
+ *             parse_mode(optional)
+ *             reply_to(optional)
+ *             text(required)
+ *
+ * Response :
+ * {
+    "haserror": false,
+    "code": 100,
+    "conversation": {
+        "message_id": "5d6bc1d17a036243b00592a2",
+        "type": "text_message",
+        "sender": {
+            "id": "1dc4d7rf5vv5fvs",
+            "type": "user",
+            "username": "diaoko89",
+            "first_name": "diaoko",
+            "last_name": "mahmoodi"
+        },
+        "text_message": {
+            "text": "hello"
+        }
+    }
+}
+ *
+ */
+router.post('/v1/sendTextMessage',[check('sender_id').isLength({min : 1})], function(req, res, next) {
 
+    let errors = validationResult(req);
+    if(!errors.isEmpty())
+        res.json({haserror:true,code:0,msg: ['sender id not found'],error : errors});
 
-    let receiverId = `${req.body.receiver_id}`;
-    Chat.findOne({type : 'private' ,
-        $and :
-            [
-                {
-                    users : {$in :[receiverId]}
-                },
-                {
-                    users :{$in :["1"]}
-                }
-            ]
+    else{
+        let receiverId = `${req.body.receiver_id}`;
+        let senderId = `${req.body.sender_id}`;
+
+        Chat.findOne({type : 'private' ,
+            $and :
+                [
+                    {
+                        users : {$in :[receiverId]}
+                    },
+                    {
+                        users :{$in :[senderId]}
+                    }
+                ]
         } , function (err,chat) {
-        console.log(chat);
-        console.log(err);
-        if(chat!==null)
-        {
+            console.log(chat);
+            console.log(err);
+            if(chat!==null)
+            {
 
-            var message= new Message({
-                receiver_id : req.body.receiver_id,
-                type : "text_message",
-                parse_mode : req.body.parse_mode,
-                reply_to : req.body.reply_to,
-                sender_id : req.body.sender_id,
-                text_message : {
-                    text: req.body.text
-                },
-            });
-            message.save(function (err) {
-                if(err)
-                {
-                    console.log('error1');
-                    res.json({haserror:true,code:0});
-                }
-                else {
-                    let message_id = [message._id];
-                    Chat.findOneAndUpdate(
-                        { _id: chat._id },
-                        { $push: { messages: message_id  } },
-                        function (error, success) {
-                            if (error) {
-                                console.log('error.........');
-                                res.json({haserror:true,code:1});
+                var message= new Message({
+                    receiver_id : req.body.receiver_id,
+                    type : "text_message",
+                    parse_mode : req.body.parse_mode,
+                    reply_to : req.body.reply_to,
+                    sender_id : req.body.sender_id,
+                    text_message : {
+                        text: req.body.text
+                    },
+                });
+                message.save(function (err) {
+                    if(err)
+                    {
+                        console.log('error1');
+                        res.json({haserror:true,code:0});
+                    }
+                    else {
+                        let message_id = [message._id];
+                        Chat.findOneAndUpdate(
+                            { _id: chat._id },
+                            { $push: { messages: message_id  } },
+                            function (error, success) {
+                                if (error) {
+                                    console.log('error.........');
+                                    res.json({haserror:true,code:1});
 
-                            } else {
-                                console.log('saved........exist');
-                                res.json({haserror:false,code:100,conversation :{    message_id: message.id,
+                                } else {
+                                    console.log('saved........exist');
+                                    res.json({haserror:false,code:100,conversation :{    message_id: message.id,
+                                            type : message.type,
+                                            sender : {
+                                                id : '1dc4d7rf5vv5fvs',
+                                                type : 'user',
+                                                username: 'diaoko89',
+                                                first_name : 'diaoko',
+                                                last_name : 'mahmoodi'
+                                            },
+                                            'text_message' : {
+                                                text: message.text_message.text
+                                            }}});
+                                }
+                            });
+                    }
+
+                });
+            }
+            else
+            {
+                var newchat = new Chat({
+                    channel_id : "lvndfv34343jn43kn43",
+                    type : "private",
+                    messages : [],
+                    users : ["1",req.body.receiver_id]
+                });
+
+                newchat.save(function (err) {
+                    if(err)
+                    {
+                        console.log("error 2")
+                    }
+                    else
+                    {
+                        var message= new Message({
+                            receiver_id : req.body.receiver_id,
+                            type : "text_message",
+                            parse_mode : req.body.parse_mode,
+                            reply_to : req.body.reply_to,
+                            sender_id : req.body.sender_id,
+                            text_message : {
+                                text: req.body.text
+                            },
+                        });
+                        message.save(function (err) {
+                            if(err)
+                            {
+                                console.log('error2');
+                                res.json({haserror:true,code:0});
+                            }
+                            else
+                            {
+
+                                newchat.messages.push(message._id);
+                                newchat.save();
+                                console.log('saved......2');
+                                res.json({haserror:true,code:100,conversation : {    message_id: message.id,
                                         type : message.type,
                                         sender : {
                                             id : '1dc4d7rf5vv5fvs',
@@ -98,79 +231,52 @@ router.post('/v1/sendTextMessage', function(req, res, next) {
                                             text: message.text_message.text
                                         }}});
                             }
+
                         });
-                }
 
-                //chat.messages.push(message._id);
-                //chat.save();
-            });
-        }
-        else
-        {
-            var newchat = new Chat({
-                channel_id : "lvndfv34343jn43kn43",
-                type : "private",
-                messages : [],
-                users : ["1",req.body.receiver_id]
-            });
+                    }
+                })
 
-            newchat.save(function (err) {
-                if(err)
-                {
-                    console.log("error 2")
-                }
-                else
-                {
-                    var message= new Message({
-                        receiver_id : req.body.receiver_id,
-                        type : "text_message",
-                        parse_mode : req.body.parse_mode,
-                        reply_to : req.body.reply_to,
-                        sender_id : req.body.sender_id,
-                        text_message : {
-                            text: req.body.text
-                        },
-                    });
-                    message.save(function (err) {
-                        if(err)
-                        {
-                            console.log('error2');
-                            res.json({haserror:true,code:0});
-                        }
-                        else
-                        {
-                            //let saved = Chat.findById(newchat._id);
-                            //console.log(newchat);
-                            //return;
-                            newchat.messages.push(message._id);
-                            newchat.save();
-                            console.log('saved......2');
-                            res.json({haserror:true,code:100,conversation : {    message_id: message.id,
-                                    type : message.type,
-                                    sender : {
-                                        id : '1dc4d7rf5vv5fvs',
-                                        type : 'user',
-                                        username: 'diaoko89',
-                                        first_name : 'diaoko',
-                                        last_name : 'mahmoodi'
-                                    },
-                                    'text_message' : {
-                                        text: message.text_message.text
-                                    }}});
-                        }
-
-                    });
-
-                }
-            })
-
-        }
+            }
 
 
-    });
+        });
+    }
+
+
 
 });
 
+/**
+ * End Point = /v1/getMessages
+ * Method = POST
+ * Parameters :
+ *             chat_id
+ * Response :
+ * {
+    "conversations": [
+        {
+            "messages_id": "5d6b6d118446212a783d6394",
+            "type": "voice",
+            "time": "2019-09-01T07:02:41.209Z",
+            "sender": {
+                "id": "1dc4d7rf5vv5fvs",
+                "type": "user",
+                "username": "diaoko89",
+                "first_name": "diaoko",
+                "last_name": "mahmoodi"
+            },
+            "voice_message": {
+                "file_id": "5d6b6d118446212a783d6393",
+                "type": "voice",
+                "duration": "380",
+                "size": "6126555"
+            }
+        }
+    ]
+}
+ *
+ */
 router.post('/v1/getMessages',function (req,res,next) {
 
     Chat
@@ -194,5 +300,29 @@ router.post('/v1/getMessages',function (req,res,next) {
                 res.json({hasserror:true,code:11,msg: 'chat not found...'})
             // Stores with items
         });
+});
+
+/**
+ *
+ * EndPoint = v1/getFileById/{id}
+ * Method = GET
+ *
+ * Description : this endpoint get id of file and return stream file for client to download
+ *  example : v1/getFileById/5d6b6d118446212a783d6393
+ *
+ */
+router.get('/v1/getFileById/:id',function (req,res,next) {
+    if(req.params.id==null)
+        res.json({haserror:true,code:404,msg: 'file not found'});
+    else
+    {
+        myFile.findOne({_id : req.params.id}).exec(function (err,file) {
+            if(file)
+                res.download(file.path);
+            else
+                res.json({haserror:true,code:404,msg: 'file not found'});
+        });
+    }
+
 });
 module.exports = router;
