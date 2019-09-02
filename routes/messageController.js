@@ -7,6 +7,10 @@ let mapper = require('../utils/mapper');
 let messageMapper = require('../utils/messagesMapper');
 const shortid = require('shortid');
 const fs = require('fs');
+const readChunk = require('read-chunk');
+const fileType = require('file-type');
+
+
 const { getAudioDurationInSeconds } = require('get-audio-duration');
 /* Post Send messages. */
 /**
@@ -82,19 +86,20 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                     else {
                         var file_duration = 0;
                         getAudioDurationInSeconds(path + filename).then((duration) => {
-                            file_duration = Math.round(duration);
+                            const buffer = readChunk.sync(path+filename, 0, fileType.minimumBytes);
 
-                            console.log(file_duration);
-                        });
-                        console.log(file_duration);
-                        var file = new File({
-                            type: 'voice',
-                            path: path + filename,
-                            size: req.files.voice.size,
-                            duration: file_duration
+                            let mimeType = fileType(buffer);
+                            file_duration = Math.round(duration);
+                            let file = new File({
+                                type: 'voice',
+                                ext : mimeType.ext,
+                                mime_type : mimeType.mime,
+                                path: path + filename,
+                                size: req.files.voice.size,
+                                duration: file_duration
                         });
                         file.save(function (err, file) {
-                            var message = new Message({
+                            let message = new Message({
                                 receiver_id: req.body.receiver_id,
                                 type: "voice",
                                 parse_mode: req.body.parse_mode,
@@ -133,9 +138,9 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                                         },
                                                         voice_message: {
                                                             file_id: file._id,
-                                                            type : file.type,
-                                                            duration : file.duration,
-                                                            size : file.size,
+                                                            file_extension : file.ext,
+                                                            file_duration : file.duration,
+                                                            file_size : file.size,
 
                                                         }
                                                     }
@@ -149,6 +154,7 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                             });
                             //res.status(400).send({haserror: false, code: 100});
                         });
+                        });
 
                     }
 
@@ -158,7 +164,7 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
 
         }
         else {
-            var newchat = new Chat({
+            let newchat = new Chat({
                 channel_id: "lvndfv34343jn43kn43",
                 type: "private",
                 messages: [],
@@ -186,64 +192,64 @@ router.post('/v1/sendVoiceMessage',function (req,res,next) {
                                 if (err)
                                     return res.status(500).send(err);
                                 else {
-                                    var file_duration = 0;
+                                    let file_duration = 0;
                                     getAudioDurationInSeconds(path + filename).then((duration) => {
                                         file_duration = Math.round(duration);
-                                    });
-                                    var file = new File({
-                                        type: 'voice',
-                                        path: path + filename,
-                                        size: req.files.voice.size,
-                                        duration: file_duration
-                                    });
-                                    file.save(function (err, file) {
-                                        if(err)
-                                        {
 
-                                        }
-                                        else {
-                                            var message = new Message({
-                                                receiver_id: req.body.receiver_id,
-                                                type: "voice",
-                                                parse_mode: req.body.parse_mode,
-                                                reply_to: req.body.reply_to,
-                                                sender_id: req.body.sender_id,
-                                                file: file._id
+                                        let file = new File({
+                                            type: 'voice',
+                                            path: path + filename,
+                                            size: req.files.voice.size,
+                                            duration: file_duration
+                                        });
+                                        file.save(function (err, file) {
+                                            if (err) {
 
-                                            });
-                                            message.save(function (err) {
-                                                if (err) {
-                                                    console.log('error1');
-                                                    res.json({haserror: true, code: 0});
-                                                }
-                                                else {
+                                            }
+                                            else {
+                                                let message = new Message({
+                                                    receiver_id: req.body.receiver_id,
+                                                    type: "voice",
+                                                    parse_mode: req.body.parse_mode,
+                                                    reply_to: req.body.reply_to,
+                                                    sender_id: req.body.sender_id,
+                                                    file: file._id
 
-                                                    newchat.messages.push(message._id);
-                                                    newchat.save();
-                                                    console.log('saved......2');
-                                                    res.json({
-                                                        haserror: true, code: 100, conversation: {
-                                                            message_id: message.id,
-                                                            type: message.type,
-                                                            sender: {
-                                                                id: '1dc4d7rf5vv5fvs',
-                                                                type: 'user',
-                                                                username: 'diaoko89',
-                                                                first_name: 'diaoko',
-                                                                last_name: 'mahmoodi'
-                                                            },
-                                                            voice_message: {
-                                                                file_id: file._id,
-                                                                type : file.type,
-                                                                duration : file.duration,
-                                                                size : file.size,
+                                                });
+                                                message.save(function (err) {
+                                                    if (err) {
+                                                        console.log('error1');
+                                                        res.json({haserror: true, code: 0});
+                                                    }
+                                                    else {
+
+                                                        newchat.messages.push(message._id);
+                                                        newchat.save();
+                                                        console.log('saved......2');
+                                                        res.json({
+                                                            haserror: true, code: 100, conversation: {
+                                                                message_id: message.id,
+                                                                type: message.type,
+                                                                sender: {
+                                                                    id: '1dc4d7rf5vv5fvs',
+                                                                    type: 'user',
+                                                                    username: 'diaoko89',
+                                                                    first_name: 'diaoko',
+                                                                    last_name: 'mahmoodi'
+                                                                },
+                                                                voice_message: {
+                                                                    file_id: file._id,
+                                                                    mime_type: file.type,
+                                                                    duration: file.duration,
+                                                                    file_size: file.size,
+                                                                }
                                                             }
-                                                        }
-                                                    });
-                                                }
+                                                        });
+                                                    }
 
-                                            });
-                                        }
+                                                });
+                                            }
+                                        });
                                     });
                                 }
                             });

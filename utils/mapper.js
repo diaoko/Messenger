@@ -26,8 +26,8 @@ module.exports.chatviewmodel = chat=>{
         last_name:'mahmoodi',
         unread_messages : 12,
         chat_photo : {
-          small_avatar_id : 1,
-          large_avatar_id : 2,
+          small_file_id : 1,
+          large_file_id : 2,
         },
             conversations: chat.messages.map(message.messageViewModel)
     }
