@@ -48,7 +48,7 @@ app.use(cors());
 app.use(morgan('combined'));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', usersRouter);
 app.use('/', messagesRouter);
 
 // catch 404 and forward to error handler
