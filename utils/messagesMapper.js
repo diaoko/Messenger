@@ -35,9 +35,10 @@ module.exports.messageViewModel =  messages => {
             },
             voice_message : {
                 file_id: messages.file._id,
-                type : messages.file.type,
-                duration : messages.file.duration,
-                size : messages.file.size
+                file_type : messages.file.type,
+                file_extension : messages.file.ext,
+                file_duration : messages.file.duration,
+                file_size : messages.file.size
             }
         }
     }

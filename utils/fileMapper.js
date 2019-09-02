@@ -1,8 +1,9 @@
 module.exports.file = file => {
   return{
-      id : file._id,
+      file_id : file._id,
       type : file.type,
+      file_extension : file.ext,
       duration : file.duration,
-      size : file.size,
+      file_size : file.size,
   }
 };
