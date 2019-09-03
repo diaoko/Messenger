@@ -9,7 +9,8 @@ let userSchema = new Schema({
     token : String,
     refresh : String,
     expireTime: String,
-    push_token : String
+    push_token : String,
+    avatars : [{type : Schema.Types.ObjectId,ref : "File"}],
 });
 
 module.exports = mongoose.model('User',userSchema,'Users');
