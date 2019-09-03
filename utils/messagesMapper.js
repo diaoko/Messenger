@@ -3,9 +3,9 @@ module.exports.messageViewModel =  messages => {
     if(messages.type.toString().trim()==='text_message'){
 
         return {
-            messages_id: messages.id,
+            message_id: messages.id,
             type : messages.type,
-            time : messages.createdAt,
+            time : Math.round(new Date(messages.createdAt).getTime()/1000),
             sender : {
                 id : '1dc4d7rf5vv5fvs',
                 type : 'user',
@@ -23,9 +23,9 @@ module.exports.messageViewModel =  messages => {
     {
 
         return {
-            messages_id: messages.id,
+            message_id: messages.id,
             type : messages.type,
-            time : messages.createdAt,
+            time :  Math.round(new Date(messages.createdAt).getTime()/1000),
             sender : {
                 id : '1dc4d7rf5vv5fvs',
                 type : 'user',

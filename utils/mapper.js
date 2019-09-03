@@ -1,7 +1,7 @@
 /*let message = messages => {
 
     return {
-        messages_id: messages.id,
+        message_id: messages.id,
         type : messages.type,
         time: messages.createdAt,
         sender : {

@@ -28,7 +28,7 @@ const { check, validationResult } = require('express-validator');
             },
             "conversations": [
                 {
-                    "messages_id": "5d6b6d118446212a783d6394",
+                    "message_id": "5d6b6d118446212a783d6394",
                     "type": "voice",
                     "time": "2019-09-01T07:02:41.209Z",
                     "sender": {
@@ -186,7 +186,7 @@ router.post('/v1/sendTextMessage',[check('sender_id').isLength({min : 1})], func
                     channel_id : "lvndfv34343jn43kn43",
                     type : "private",
                     messages : [],
-                    users : ["1",req.body.receiver_id]
+                    users : [req.body.sender_id,req.body.receiver_id]
                 });
 
                 newchat.save(function (err) {
@@ -256,7 +256,7 @@ router.post('/v1/sendTextMessage',[check('sender_id').isLength({min : 1})], func
  * {
     "conversations": [
         {
-            "messages_id": "5d6b6d118446212a783d6394",
+            "message_id": "5d6b6d118446212a783d6394",
             "type": "voice",
             "time": "2019-09-01T07:02:41.209Z",
             "sender": {
@@ -284,7 +284,7 @@ router.post('/v1/getMessages',function (req,res,next) {
         .populate({
                 path: 'messages',
                 options : {
-                sort: { 'createdAt': -1 }
+                sort: { 'createdAt': 1 }
             },
               populate : {
                     path : 'file',
