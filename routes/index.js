@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Message = require('../models/message');
 var Chat = require('../models/chat');
-
+const auth = require('../middleware/auth');
 let mapper = require('../utils/mapper');
 let messageMapper = require('../utils/messagesMapper');
 const shortid = require('shortid');
@@ -108,7 +108,7 @@ router.post('/v1/getAllChats', function(req, res, next) {
 }
  *
  */
-router.post('/v1/sendTextMessage',[check('sender_id').isLength({min : 1})], function(req, res, next) {
+router.post('/v1/sendTextMessage',auth, function(req, res, next) {
 
     let errors = validationResult(req);
     if(!errors.isEmpty())
@@ -125,7 +125,7 @@ router.post('/v1/sendTextMessage',[check('sender_id').isLength({min : 1})], func
                         users : {$in :[receiverId]}
                     },
                     {
-                        users :{$in :[senderId]}
+                        users :{$in :[req.user._id]}
                     }
                 ]
         } , function (err,chat) {
@@ -139,7 +139,7 @@ router.post('/v1/sendTextMessage',[check('sender_id').isLength({min : 1})], func
                     type : "text_message",
                     parse_mode : req.body.parse_mode,
                     reply_to : req.body.reply_to,
-                    sender_id : req.body.sender_id,
+                    sender_id : req.user._id,
                     text_message : {
                         text: req.body.text
                     },
@@ -186,7 +186,7 @@ router.post('/v1/sendTextMessage',[check('sender_id').isLength({min : 1})], func
                     channel_id : "lvndfv34343jn43kn43",
                     type : "private",
                     messages : [],
-                    users : [req.body.sender_id,req.body.receiver_id]
+                    users : [req.user._id,req.body.receiver_id]
                 });
 
                 newchat.save(function (err) {
@@ -201,7 +201,7 @@ router.post('/v1/sendTextMessage',[check('sender_id').isLength({min : 1})], func
                             type : "text_message",
                             parse_mode : req.body.parse_mode,
                             reply_to : req.body.reply_to,
-                            sender_id : req.body.sender_id,
+                            sender_id : req.user._id,
                             text_message : {
                                 text: req.body.text
                             },
@@ -277,7 +277,7 @@ router.post('/v1/sendTextMessage',[check('sender_id').isLength({min : 1})], func
 }
  *
  */
-router.post('/v1/getMessages',function (req,res,next) {
+router.post('/v1/getMessages',auth,function (req,res,next) {
 
     Chat
         .findOne({_id : req.body.chat_id}) // all

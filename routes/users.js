@@ -6,6 +6,7 @@ let File = require('../models/file');
 const readChunk = require('read-chunk');
 const fileType = require('file-type');
 const shortid = require('shortid');
+const auth = require('../middleware/auth');
 /* GET users listing. */
 router.post('/v1/User/RequestOTP', function(req, res, next) {
 
@@ -48,19 +49,36 @@ router.post('/v1/User/Login',function (req,res,next) {
         if (!error && response.statusCode === 200) {
             if(body.code===100)
             {
-                let user =new User({
-                    id : body.gate,
-                    first_name : '',
-                    last_name : '',
-                    username : '',
-                    token : body.token,
-                    refresh : body.refresh,
-                    expireTime: body.expire_at,
-                    push_token : ''
+                User.findOneAndUpdate({'id': body.gate },{token : body.token,refresh : body.refresh,expireTime: body.expire_at},{ upsert: true, new: true, setDefaultsOnInsert: true },function (error,user) {
+                    if(error)
+                    {
+
+                    }
+                    else
+                    {
+                        console.log("****"+user);
+                        res.json({
+                            haserror: false,
+                            code:100,
+                            user:{
+                                id : user._id,
+                                first_name: user.first_name,
+                                last_name: user.last_name,
+                                username: user.username,
+                                token: user.token,
+                                refresh: user.refresh,
+                                expireTime: user.expireTime,
+                                avatars: user.avatars,
+                            }
+                        });
+                    }
                 });
-                user.save();
+
             }
-            res.send(body);
+            else {
+                res.json({haserror:true,code:body.code,msg: 'error'})
+            }
+
             console.log(body);
         }
         else {
@@ -71,11 +89,11 @@ router.post('/v1/User/Login',function (req,res,next) {
 
     request(options, callback);
 });
-router.post('/v1/user/updateProfile',function (req,res) {
+router.post('/v1/user/updateProfile',auth,function (req,res) {
    //console.log(req.headers.token);
     let file_id;
 
-    if(!req.files)
+    if(req.files)
     {
         let avatar = req.files.avatar;
         let filename = (Math.floor(new Date() / 1000)) + '_' + shortid.generate() + '_' + avatar.name;
@@ -108,7 +126,7 @@ router.post('/v1/user/updateProfile',function (req,res) {
 
         if(file_id)
         {
-            User.findOneAndUpdate({token : req.headers.token}, {$push:{avatars:file_id},$set:{first_name :req.body.first_name,last_name: req.body.last_name}}, (err, doc) => {
+            User.findOneAndUpdate({token : req.Authorization}, {$push:{avatars:file_id},$set:{first_name :req.body.first_name,last_name: req.body.last_name}}, (err, doc) => {
                 if (err) {
                     console.log("Something wrong when updating data!");
                     res.json({haserror:true,code:0,msg: 'profile not updated'})
@@ -122,12 +140,13 @@ router.post('/v1/user/updateProfile',function (req,res) {
         }
         else
         {
-            User.findOneAndUpdate({token : req.headers.token}, {$set:{first_name :req.body.first_name,last_name: req.body.last_name}}, (err, doc) => {
+            User.findOneAndUpdate({token : req.Authorization}, {$set:{first_name :req.body.first_name,last_name: req.body.last_name}}, (err, doc) => {
                 if (err) {
                     console.log("Something wrong when updating data!");
                     res.json({haserror:true,code:0,msg: 'profile not updated'})
                 }
                 else {
+
                     res.json({haserror:false,code:100,msg:'profile updated'});
                     console.log(doc);
                 }
