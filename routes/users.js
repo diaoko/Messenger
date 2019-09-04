@@ -9,8 +9,10 @@ const shortid = require('shortid');
 const auth = require('../middleware/auth');
 /* GET users listing. */
 router.post('/v1/User/RequestOTP', function(req, res, next) {
-
-
+    if(req.body.mobile===undefined || req.body.mobile===null || req.body.mobile==='')
+    {
+        res.send({haserror:true,code:0,msg:'Mobile number required'});
+    }
     let options = {
         url: 'https://auth.kubakbank.com/v1/RequestOTP',
         method: 'POST',
@@ -35,65 +37,73 @@ router.post('/v1/User/RequestOTP', function(req, res, next) {
     request(options, callback);
 });
 router.post('/v1/User/Login',function (req,res,next) {
-    let options = {
-        url: 'https://auth.kubakbank.com/v1/Login',
-        method: 'POST',
-        json : true,
-        form: {
-            mobile: req.body.mobile,
-            otp: req.body.otp
-        }
-    };
+    if(req.body.mobile===undefined || req.body.mobile===null || req.body.mobile==='' || req.body.otp===undefined || req.body.otp===null || req.body.otp==='')
+    {
+        res.send({haserror:true,code:0,msg:'invalid input'});
+    }
+    else
+    {
+        let options = {
+            url: 'https://auth.kubakbank.com/v1/Login',
+            method: 'POST',
+            json : true,
+            form: {
+                mobile: req.body.mobile,
+                otp: req.body.otp
+            }
+        };
 
-    function callback(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            if(body.code===100)
-            {
-                User.findOneAndUpdate({'id': body.gate },{token : body.token,refresh : body.refresh,expireTime: body.expire_at},{ upsert: true, new: true, setDefaultsOnInsert: true },function (error,user) {
-                    if(error)
-                    {
+        function callback(error, response, body) {
+            if (!error && response.statusCode === 200) {
+                if(body.code===100)
+                {
+                    User.findOneAndUpdate({'id': body.gate },{token : body.token,refresh : body.refresh,expireTime: body.expire_at},{ upsert: true, new: true, setDefaultsOnInsert: true },function (error,user) {
+                        if(error)
+                        {
 
-                    }
-                    else
-                    {
-                        console.log("****"+user);
-                        res.json({
-                            haserror: false,
-                            code:100,
-                            user:{
-                                id : user._id,
-                                first_name: user.first_name,
-                                last_name: user.last_name,
-                                username: user.username,
-                                token: user.token,
-                                refresh: user.refresh,
-                                expireTime: user.expireTime,
-                                avatars: user.avatars,
-                            }
-                        });
-                    }
-                });
+                        }
+                        else
+                        {
+                            console.log("****"+user);
+                            res.json({
+                                haserror: false,
+                                code:100,
+                                user:{
+                                    id : user._id,
+                                    first_name: user.first_name,
+                                    last_name: user.last_name,
+                                    username: user.username,
+                                    token: user.token,
+                                    refresh: user.refresh,
+                                    expireTime: user.expireTime,
+                                    avatars: user.avatars,
+                                }
+                            });
+                        }
+                    });
 
+                }
+                else {
+                    res.json({haserror:true,code:body.code,msg: 'error'})
+                }
+
+                console.log(body);
             }
             else {
-                res.json({haserror:true,code:body.code,msg: 'error'})
+                res.send({haserror:true,code:0,msg : 'error'});
+                console.log(error);
             }
-
-            console.log(body);
         }
-        else {
-            res.send({haserror:true,code:0,msg : 'error'});
-            console.log(error);
-        }
+        request(options, callback);
     }
 
-    request(options, callback);
+
+
 });
 router.post('/v1/user/updateProfile',auth,function (req,res) {
    //console.log(req.headers.token);
     let file_id;
-
-    if(req.files)
+    if(Object.keys(req.files).length !== 0 && req.files.avatar!==undefined)
     {
         let avatar = req.files.avatar;
         let filename = (Math.floor(new Date() / 1000)) + '_' + shortid.generate() + '_' + avatar.name;
@@ -117,33 +127,29 @@ router.post('/v1/user/updateProfile',auth,function (req,res) {
                     }
                     else {
                         file_id=file._id
+                        User.findOneAndUpdate({token : req.Authorization}, {$push:{avatars:file_id},$set:{first_name :req.body.first_name,last_name: req.body.last_name}}, (err, doc) => {
+                            if (err) {
+                                console.log("Something wrong when updating data!");
+                                res.json({haserror:true,code:0,msg: 'profile not updated1'})
+                            }
+                            else {
+                                res.json({haserror:false,code:100,msg:'profile updated2'});
+                                console.log(doc);
+                            }
+
+                        });
                     }
                 })
             }
         });
 
     }
-
-        if(file_id)
-        {
-            User.findOneAndUpdate({token : req.Authorization}, {$push:{avatars:file_id},$set:{first_name :req.body.first_name,last_name: req.body.last_name}}, (err, doc) => {
-                if (err) {
-                    console.log("Something wrong when updating data!");
-                    res.json({haserror:true,code:0,msg: 'profile not updated'})
-                }
-                else {
-                    res.json({haserror:false,code:100,msg:'profile updated'});
-                    console.log(doc);
-                }
-
-            });
-        }
-        else
+    else
         {
             User.findOneAndUpdate({token : req.Authorization}, {$set:{first_name :req.body.first_name,last_name: req.body.last_name}}, (err, doc) => {
                 if (err) {
                     console.log("Something wrong when updating data!");
-                    res.json({haserror:true,code:0,msg: 'profile not updated'})
+                    res.json({haserror:true,code:0,msg: 'profile not updated3'})
                 }
                 else {
 
