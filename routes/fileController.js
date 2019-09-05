@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var myFile = require('../models/file');
+const auth = require('../middleware/auth');
 /**
  *
  * EndPoint = v1/getFileById/{id}
@@ -10,7 +11,7 @@ var myFile = require('../models/file');
  *  example : v1/getFileById/5d6b6d118446212a783d6393
  *
  */
-router.get('/v1/getFileById/:id',function (req,res,next) {
+router.get('/v1/getFileById/:id',auth,function (req,res,next) {
     if(req.params.id==null)
         res.json({haserror:true,code:404,msg: 'file not found'});
     else
