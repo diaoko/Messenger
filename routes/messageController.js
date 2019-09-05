@@ -110,7 +110,7 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                     file.save(function (err, file) {
                                         let message = new Message({
                                             receiver_id: req.body.receiver_id,
-                                            type: "voice",
+                                            type: "voice_message",
                                             parse_mode: req.body.parse_mode,
                                             reply_to: req.body.reply_to,
                                             sender_id: req.body.sender_id,
@@ -218,7 +218,7 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                                     else {
                                                         let message = new Message({
                                                             receiver_id: req.body.receiver_id,
-                                                            type: "voice",
+                                                            type: "voice_message",
                                                             parse_mode: req.body.parse_mode,
                                                             reply_to: req.body.reply_to,
                                                             sender_id: req.body.sender_id,

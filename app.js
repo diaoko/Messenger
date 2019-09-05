@@ -12,6 +12,7 @@ const helmet = require('helmet');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var messagesRouter = require('./routes/messageController');
+var fileRouter = require('./routes/fileController');
 
 const uploadfile = require('express-fileupload');
 
@@ -50,6 +51,7 @@ app.use(morgan('combined'));
 app.use('/', indexRouter);
 app.use('/', usersRouter);
 app.use('/', messagesRouter);
+app.use('/', fileRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
