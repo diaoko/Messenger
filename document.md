@@ -320,3 +320,26 @@ BASE_URL/v1/sendVoiceMessage
     }
 }
 ```
+## download file
+
+by using this end point a specific file will be downloaded
+
+### url
+
+```bash
+BASE_URL//v1/getFileById/:id
+```
+### parameter
+
+```bash
+'Authorization' : jwt token(send in header)
+'id':id of file(send by GET)
+
+
+```
+
+### response
+
+```javascript
+without any response
+```
