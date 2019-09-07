@@ -113,7 +113,7 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                             type: "voice_message",
                                             parse_mode: req.body.parse_mode,
                                             reply_to: req.body.reply_to,
-                                            sender_id: req.body.sender_id,
+                                            sender_id: req.user._id,
                                             file: file._id
 
                                         });
@@ -221,7 +221,7 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                                             type: "voice_message",
                                                             parse_mode: req.body.parse_mode,
                                                             reply_to: req.body.reply_to,
-                                                            sender_id: req.body.sender_id,
+                                                            sender_id: req.user._id,
                                                             file: file._id
 
                                                         });
