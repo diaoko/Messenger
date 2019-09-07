@@ -70,6 +70,7 @@ router.post('/v1/User/Login',function (req,res,next) {
                                 code:100,
                                 user:{
                                     id : user._id,
+                                    type : 'user',
                                     first_name: user.first_name,
                                     last_name: user.last_name,
                                     username: user.username,

@@ -7,11 +7,11 @@ module.exports.messageViewModel =  messages => {
             type : messages.type,
             time : Math.round(new Date(messages.createdAt).getTime()/1000),
             sender : {
-                id : '1dc4d7rf5vv5fvs',
-                type : 'user',
-                username: 'diaoko89',
-                first_name : 'diaoko',
-                last_name : 'mahmoodi'
+                id : messages.sender_id._id,
+                type : messages.sender_id.type,
+                username: messages.sender_id.username,
+                first_name : messages.sender_id.first_name,
+                last_name : messages.sender_id.last_name
             },
             text_message : {
                 text: messages.text_message.text
@@ -27,11 +27,11 @@ module.exports.messageViewModel =  messages => {
             type : messages.type,
             time :  Math.round(new Date(messages.createdAt).getTime()/1000),
             sender : {
-                id : '1dc4d7rf5vv5fvs',
-                type : 'user',
-                username: 'diaoko89',
-                first_name : 'diaoko',
-                last_name : 'mahmoodi'
+                id : messages.sender_id._id,
+                type : messages.sender_id.type,
+                username: messages.sender_id.username,
+                first_name : messages.sender_id.first_name,
+                last_name : messages.sender_id.last_name
             },
             voice_message : {
                 file_id: messages.file._id,

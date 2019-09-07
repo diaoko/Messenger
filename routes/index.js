@@ -63,7 +63,8 @@ router.post('/v1/getAllChats',auth, function(req, res, next) {
             limit : 1,
             sort: { 'createdAt': Number(-1) }
             },
-            populate: { path : 'file' , model : 'File'}
+            populate: [{ path : 'file' , model : 'File'},{ path : 'sender_id' , model : 'User'}],
+
         })
         .exec(function (err, chats) {
             if(chats!=null)

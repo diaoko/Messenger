@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 var TextMessageSchema = new Schema({
     reply_to : String,
     type : String,
-    sender_id : String,
+    sender_id : {type : Schema.Types.ObjectId , ref : 'User'},
     parse_mode : String,
     file : {type : Schema.Types.ObjectId , ref : 'File'},
     text_message :
