@@ -58,14 +58,14 @@ router.post('/v1/getAllChats',auth, function(req, res, next) {
         res.json({hasserror:false,code:100,chats:chats.messages});
     });*/
     Chat
-        .find({}) // all
-        .populate({path: 'messages',options : {
+        .find({users : {$in :[req.user._id]}}) // all
+        .populate([{path: 'messages',options : {
             limit : 1,
             sort: { 'createdAt': Number(-1) }
             },
             populate: [{ path : 'file' , model : 'File'},{ path : 'sender_id' , model : 'User'}],
 
-        })
+        },{path: 'users',model:'User', match: {_id : {$ne : req.user._id}},}])
         .exec(function (err, chats) {
             if(chats!=null)
                 res.json({chats : chats.map(mapper.chatviewmodel)});
@@ -168,11 +168,11 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                             res.json({haserror:false,code:100,conversation :{    message_id: message.id,
                                                     type : message.type,
                                                     sender : {
-                                                        id : '1dc4d7rf5vv5fvs',
+                                                        id : req.user._id,
                                                         type : 'user',
-                                                        username: 'diaoko89',
-                                                        first_name : 'diaoko',
-                                                        last_name : 'mahmoodi'
+                                                        username: req.user.username,
+                                                        first_name : req.user.first_name,
+                                                        last_name : req.user.last_name
                                                     },
                                                     'text_message' : {
                                                         text: message.text_message.text
@@ -224,11 +224,11 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                         res.json({haserror:true,code:100,conversation : {    message_id: message.id,
                                                 type : message.type,
                                                 sender : {
-                                                    id : '1dc4d7rf5vv5fvs',
+                                                    id : req.user._id,
                                                     type : 'user',
-                                                    username: 'diaoko89',
-                                                    first_name : 'diaoko',
-                                                    last_name : 'mahmoodi'
+                                                    username: req.user.username,
+                                                    first_name : req.user.first_name,
+                                                    last_name : req.user.last_name
                                                 },
                                                 'text_message' : {
                                                     text: message.text_message.text

@@ -139,11 +139,11 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                                                     message_id: message.id,
                                                                     type: message.type,
                                                                     sender: {
-                                                                        id: '1dc4d7rf5vv5fvs',
-                                                                        type: 'user',
-                                                                        username: 'diaoko89',
-                                                                        first_name: 'diaoko',
-                                                                        last_name: 'mahmoodi'
+                                                                        id : req.user._id,
+                                                                        type : 'user',
+                                                                        username: req.user.username,
+                                                                        first_name : req.user.first_name,
+                                                                        last_name : req.user.last_name
                                                                     },
                                                                     voice_message: {
                                                                         file_id: file._id,
@@ -240,11 +240,11 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                                                         message_id: message.id,
                                                                         type: message.type,
                                                                         sender: {
-                                                                            id: '1dc4d7rf5vv5fvs',
-                                                                            type: 'user',
-                                                                            username: 'diaoko89',
-                                                                            first_name: 'diaoko',
-                                                                            last_name: 'mahmoodi'
+                                                                            id : req.user._id,
+                                                                            type : 'user',
+                                                                            username: req.user.username,
+                                                                            first_name : req.user.first_name,
+                                                                            last_name : req.user.last_name
                                                                         },
                                                                         voice_message: {
                                                                             file_id: file._id,
