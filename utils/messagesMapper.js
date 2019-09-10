@@ -5,7 +5,7 @@ module.exports.messageViewModel =  messages => {
         return {
             message_id: messages.id,
             type : messages.type,
-            time : Math.round(new Date(messages.createdAt).getTime()/1000),
+            time : Math.round(new Date(messages.createdAt).getTime()),
             from : {
                 id : messages.sender_id._id,
                 type : messages.sender_id.type,
@@ -25,7 +25,7 @@ module.exports.messageViewModel =  messages => {
         return {
             message_id: messages.id,
             type : messages.type,
-            time :  Math.round(new Date(messages.createdAt).getTime()/1000),
+            time :  Math.round(new Date(messages.createdAt).getTime()),
             from : {
                 id : messages.sender_id._id,
                 type : messages.sender_id.type,
