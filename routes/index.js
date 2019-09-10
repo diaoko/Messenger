@@ -113,31 +113,16 @@ router.post('/v1/getAllChats',auth, function(req, res, next) {
 router.post('/v1/sendTextMessage',auth, function(req, res, next) {
 
         var receiverId = `${req.body.receiver_id}`;
-        User.findOne({id:receiverId},function(err,user){
+        Chat.findOne({ _id:  receiverId },function (err,chat) {
             if(err)
             {
-
+                res.json({haserror:true,code:0,msg:'id not valid'})
             }
-            if(user)
+            else if(chat)
             {
-                receiverId = user._id;
-                Chat.findOne({type : 'private' ,
-                    $and :
-                        [
-                            {
-                                users : {$in :[receiverId]}
-                            },
-                            {
-                                users : {$in :[req.user._id]}
-                            }
-                        ]
-                } , function (err,chat) {
-                    console.log(chat);
-
-                    if(chat!==null)
-                    {
-
-                        var message= new Message({
+                if(chat.users.includes(req.user._id))
+                {
+                        let message= new Message({
                             receiver_id : receiverId,
                             type : "text_message",
                             parse_mode : req.body.parse_mode,
@@ -182,24 +167,40 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                             }
 
                         });
-                    }
-                    else
-                    {
-                        var newchat = new Chat({
-                            channel_id : "lvndfv34343jn43kn433333333333333333333",
-                            type : "private",
-                            messages : [],
-                            users : [req.user._id,receiverId]
-                        });
 
-                        newchat.save(function (err) {
-                            if(err)
+                }
+                else
+                {
+                    res.json({haserror:true,code:3,msg:'receiver person not found'});
+                }
+            }
+            else
+            {
+                User.findOne({id:receiverId},function(err,user){
+                    if(err)
+                    {
+
+                    }
+                    else if(user)
+                    {
+                        receiverId = user._id;
+                        Chat.findOne({type : 'private' ,
+                            $and :
+                                [
+                                    {
+                                        users : {$in :[receiverId]}
+                                    },
+                                    {
+                                        users : {$in :[req.user._id]}
+                                    }
+                                ]
+                        } , function (err,chat) {
+                            console.log(chat);
+
+                            if(chat!==null)
                             {
-                                console.log("error 2")
-                            }
-                            else
-                            {
-                                var message= new Message({
+
+                                let message= new Message({
                                     receiver_id : receiverId,
                                     type : "text_message",
                                     parse_mode : req.body.parse_mode,
@@ -212,39 +213,104 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                 message.save(function (err) {
                                     if(err)
                                     {
-                                        console.log('error2');
+                                        console.log('error1');
                                         res.json({haserror:true,code:0});
+                                    }
+                                    else {
+                                        let message_id = [message._id];
+                                        Chat.findOneAndUpdate(
+                                            { _id: chat._id },
+                                            { $push: { messages: message_id  } },
+                                            function (error, success) {
+                                                if (error) {
+                                                    console.log('error.........');
+                                                    res.json({haserror:true,code:1});
+
+                                                } else {
+                                                    console.log('saved........exist');
+                                                    res.json({haserror:false,code:100,conversation :{    message_id: message.id,
+                                                            type : message.type,
+                                                            sender : {
+                                                                id : req.user._id,
+                                                                type : 'user',
+                                                                username: req.user.username,
+                                                                first_name : req.user.first_name,
+                                                                last_name : req.user.last_name
+                                                            },
+                                                            'text_message' : {
+                                                                text: message.text_message.text
+                                                            }}});
+                                                }
+                                            });
+                                    }
+
+                                });
+                            }
+                            else
+                            {
+                                let newchat = new Chat({
+                                    channel_id : "lvndfv34343jn43kn433333333333333333333",
+                                    type : "private",
+                                    messages : [],
+                                    users : [req.user._id,receiverId]
+                                });
+
+                                newchat.save(function (err) {
+                                    if(err)
+                                    {
+                                        console.log("error 2")
                                     }
                                     else
                                     {
+                                        let message= new Message({
+                                            receiver_id : receiverId,
+                                            type : "text_message",
+                                            parse_mode : req.body.parse_mode,
+                                            reply_to : req.body.reply_to,
+                                            sender_id : req.user._id,
+                                            text_message : {
+                                                text: req.body.text
+                                            },
+                                        });
+                                        message.save(function (err) {
+                                            if(err)
+                                            {
+                                                console.log('error2');
+                                                res.json({haserror:true,code:0});
+                                            }
+                                            else
+                                            {
 
-                                        newchat.messages.push(message._id);
-                                        newchat.save();
-                                        console.log('saved......2');
-                                        res.json({haserror:true,code:100,conversation : {    message_id: message.id,
-                                                type : message.type,
-                                                sender : {
-                                                    id : req.user._id,
-                                                    type : 'user',
-                                                    username: req.user.username,
-                                                    first_name : req.user.first_name,
-                                                    last_name : req.user.last_name
-                                                },
-                                                'text_message' : {
-                                                    text: message.text_message.text
-                                                }}});
+                                                newchat.messages.push(message._id);
+                                                newchat.save();
+                                                console.log('saved......2');
+                                                res.json({haserror:true,code:100,conversation : {    message_id: message.id,
+                                                        type : message.type,
+                                                        sender : {
+                                                            id : req.user._id,
+                                                            type : 'user',
+                                                            username: req.user.username,
+                                                            first_name : req.user.first_name,
+                                                            last_name : req.user.last_name
+                                                        },
+                                                        'text_message' : {
+                                                            text: message.text_message.text
+                                                        }}});
+                                            }
+                                        });
                                     }
-                                });
+                                })
                             }
-                        })
+                        });
                     }
+                    else {
+                        res.json({haserror:true,code:3,msg:'receiver person not found'});
+                    }
+
                 });
             }
-            else {
-                res.json({haserror:true,code:444,msg:'receiver person not found'});
-            }
-
         });
+
 
 });
 
