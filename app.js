@@ -10,7 +10,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/userController');
 var messagesRouter = require('./routes/messageController');
 var fileRouter = require('./routes/fileController');
 

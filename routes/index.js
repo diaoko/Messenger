@@ -152,7 +152,7 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                             console.log('saved........exist');
                                             res.json({haserror:false,code:100,conversation :{    message_id: message.id,
                                                     type : message.type,
-                                                    sender : {
+                                                    from : {
                                                         id : req.user._id,
                                                         type : 'user',
                                                         username: req.user.username,
@@ -230,7 +230,7 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                                     console.log('saved........exist');
                                                     res.json({haserror:false,code:100,conversation :{    message_id: message.id,
                                                             type : message.type,
-                                                            sender : {
+                                                            from : {
                                                                 id : req.user._id,
                                                                 type : 'user',
                                                                 username: req.user.username,
@@ -286,7 +286,7 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                                 console.log('saved......2');
                                                 res.json({haserror:true,code:100,conversation : {    message_id: message.id,
                                                         type : message.type,
-                                                        sender : {
+                                                        from : {
                                                             id : req.user._id,
                                                             type : 'user',
                                                             username: req.user.username,

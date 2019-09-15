@@ -138,7 +138,7 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                                                 haserror: false, code: 100, conversation: {
                                                                     message_id: message.id,
                                                                     type: message.type,
-                                                                    sender: {
+                                                                    from: {
                                                                         id : req.user._id,
                                                                         type : 'user',
                                                                         username: req.user.username,
@@ -239,7 +239,7 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                                                     haserror: true, code: 100, conversation: {
                                                                         message_id: message.id,
                                                                         type: message.type,
-                                                                        sender: {
+                                                                        from: {
                                                                             id : req.user._id,
                                                                             type : 'user',
                                                                             username: req.user.username,
