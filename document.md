@@ -121,9 +121,9 @@ BASE_URL/v1/getAllChats
             "conversations": [
                 {
                     "message_id": "5d700baaac206f08563b34ff",
-                    "type": "voice",
+                    "type": "voice_message",
                     "time": 1567624107,
-                    "sender": {
+                    "from": {
                         "id": "1dc4d7rf5vv5fvs",
                         "type": "user",
                         "username": "diaoko89",
@@ -168,7 +168,7 @@ BASE_URL/v1/getMessages
             "message_id": "5d6fff1e80bc007ddf0bc9ea",
             "type": "text_message",
             "time": 1567620895,
-            "sender": {
+            "from": {
                 "id": "1dc4d7rf5vv5fvs",
                 "type": "user",
                 "username": "diaoko89",
@@ -183,7 +183,7 @@ BASE_URL/v1/getMessages
             "message_id": "5d6fff2e80bc007ddf0bc9eb",
             "type": "text_message",
             "time": 1567620910,
-            "sender": {
+            "from": {
                 "id": "1dc4d7rf5vv5fvs",
                 "type": "user",
                 "username": "diaoko89",
@@ -196,9 +196,9 @@ BASE_URL/v1/getMessages
         },
         {
             "message_id": "5d700b95ac206f08563b34fd",
-            "type": "voice",
+            "type": "voice_message",
             "time": 1567624086,
-            "sender": {
+            "from": {
                 "id": "1dc4d7rf5vv5fvs",
                 "type": "user",
                 "username": "diaoko89",
@@ -215,9 +215,9 @@ BASE_URL/v1/getMessages
         },
         {
             "message_id": "5d700baaac206f08563b34ff",
-            "type": "voice",
+            "type": "voice_message",
             "time": 1567624107,
-            "sender": {
+            "from": {
                 "id": "1dc4d7rf5vv5fvs",
                 "type": "user",
                 "username": "diaoko89",
@@ -263,7 +263,7 @@ BASE_URL/v1/sendTextMessage
     "conversation": {
         "message_id": "5d701770e3868f102d4782de",
         "type": "text_message",
-        "sender": {
+        "from": {
             "id": "1dc4d7rf5vv5fvs",
             "type": "user",
             "username": "diaoko89",
@@ -303,8 +303,8 @@ BASE_URL/v1/sendVoiceMessage
     "code": 100,
     "conversation": {
         "message_id": "5d7018d5e3868f102d4782e0",
-        "type": "voice",
-        "sender": {
+        "type": "voice_message",
+        "from": {
             "id": "1dc4d7rf5vv5fvs",
             "type": "user",
             "username": "diaoko89",
