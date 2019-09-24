@@ -6,7 +6,7 @@ var File = require('../models/file');
 var User = require('../models/user');
 const auth = require('../middleware/auth');
 let mapper = require('../utils/mapper');
-let messageMapper = require('../utils/messagesMapper');
+let messageViewMapper = require('../utils/viewMapper/SendVoiceMessageResponseMapper');
 const shortid = require('shortid');
 const fs = require('fs');
 const readChunk = require('read-chunk');
@@ -120,34 +120,14 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
 
                                                     } else {
                                                         console.log('saved........exist');
-                                                        res.json({
-                                                            haserror: false, code: 100, conversation: {
-                                                                message_id: message.id,
-                                                                type: message.type,
-                                                                from: {
-                                                                    id : req.user._id,
-                                                                    type : 'user',
-                                                                    username: req.user.username,
-                                                                    first_name : req.user.first_name,
-                                                                    last_name : req.user.last_name
-                                                                },
-                                                                voice_message: {
-                                                                    file_id: file._id,
-                                                                    file_extension : file.ext,
-                                                                    file_duration : file.duration,
-                                                                    file_size : file.size,
+                                                        res.json(messageViewMapper.success(message,req,file));
 
-                                                                }
-                                                            }
-                                                        });
                                                     }
                                                 });
                                         }
 
-                                        //chat.messages.push(message._id);
-                                        //chat.save();
                                     });
-                                    //res.status(400).send({haserror: false, code: 100});
+
                                 });
                             });
 
@@ -245,26 +225,8 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
 
                                                             } else {
                                                                 console.log('saved........exist');
-                                                                res.json({
-                                                                    haserror: false, code: 100, conversation: {
-                                                                        message_id: message.id,
-                                                                        type: message.type,
-                                                                        from: {
-                                                                            id : req.user._id,
-                                                                            type : 'user',
-                                                                            username: req.user.username,
-                                                                            first_name : req.user.first_name,
-                                                                            last_name : req.user.last_name
-                                                                        },
-                                                                        voice_message: {
-                                                                            file_id: file._id,
-                                                                            file_extension : file.ext,
-                                                                            file_duration : file.duration,
-                                                                            file_size : file.size,
+                                                                res.json(messageViewMapper.success(message,req,file));
 
-                                                                        }
-                                                                    }
-                                                                });
                                                             }
                                                         });
                                                 }
@@ -346,27 +308,8 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                                                     newchat.messages.push(message._id);
                                                                     newchat.save();
                                                                     console.log('saved......2');
-                                                                    res.json({
-                                                                        haserror: true, code: 100, conversation: {
-                                                                            message_id: message.id,
-                                                                            type: message.type,
-                                                                            from: {
-                                                                                id : req.user._id,
-                                                                                type : 'user',
-                                                                                username: req.user.username,
-                                                                                first_name : req.user.first_name,
-                                                                                last_name : req.user.last_name
-                                                                            },
-                                                                            voice_message: {
-                                                                                file_id: file._id,
-                                                                                mime_type: file.type,
-                                                                                duration: file.duration,
-                                                                                file_size: file.size,
-                                                                            }
-                                                                        }
-                                                                    });
+                                                                    res.json(messageViewMapper.success(message,req,file));
                                                                 }
-
                                                             });
                                                         }
                                                     });

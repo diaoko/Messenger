@@ -6,6 +6,7 @@ var User = require('../models/user');
 const auth = require('../middleware/auth');
 let mapper = require('../utils/mapper');
 let messageMapper = require('../utils/messagesMapper');
+let messageViewMapper = require('../utils/viewMapper/SendTextMessageResponseMapper');
 const shortid = require('shortid');
 const { check, validationResult } = require('express-validator');
 /* GET home page. */
@@ -152,18 +153,8 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
 
                                         } else {
                                             console.log('saved........exist');
-                                            res.json({haserror:false,code:100,conversation :{    message_id: message.id,
-                                                    type : message.type,
-                                                    from : {
-                                                        id : req.user._id,
-                                                        type : 'user',
-                                                        username: req.user.username,
-                                                        first_name : req.user.first_name,
-                                                        last_name : req.user.last_name
-                                                    },
-                                                    'text_message' : {
-                                                        text: message.text_message.text
-                                                    }}});
+                                            res.json(messageViewMapper.success(message,req));
+
                                         }
                                     });
                             }
@@ -236,18 +227,7 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
 
                                             } else {
                                                 console.log('saved........exist');
-                                                res.json({haserror:false,code:100,conversation :{    message_id: message.id,
-                                                        type : message.type,
-                                                        from : {
-                                                            id : req.user._id,
-                                                            type : 'user',
-                                                            username: req.user.username,
-                                                            first_name : req.user.first_name,
-                                                            last_name : req.user.last_name
-                                                        },
-                                                        'text_message' : {
-                                                            text: message.text_message.text
-                                                        }}});
+                                                res.json(messageViewMapper.success(message,req));
                                             }
                                         });
                                 }
@@ -292,18 +272,7 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                             newchat.messages.push(message._id);
                                             newchat.save();
                                             console.log('saved......2');
-                                            res.json({haserror:true,code:100,conversation : {    message_id: message.id,
-                                                    type : message.type,
-                                                    from : {
-                                                        id : req.user._id,
-                                                        type : 'user',
-                                                        username: req.user.username,
-                                                        first_name : req.user.first_name,
-                                                        last_name : req.user.last_name
-                                                    },
-                                                    'text_message' : {
-                                                        text: message.text_message.text
-                                                    }}});
+                                            res.json(messageViewMapper.success(message,req));
                                         }
                                     });
                                 }
