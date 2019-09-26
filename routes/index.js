@@ -7,6 +7,7 @@ const auth = require('../middleware/auth');
 let mapper = require('../utils/mapper');
 let messageMapper = require('../utils/messagesMapper');
 let messageViewMapper = require('../utils/viewMapper/SendTextMessageResponseMapper');
+let pushManager = require('../library/PushManager');
 const shortid = require('shortid');
 const { check, validationResult } = require('express-validator');
 /* GET home page. */
@@ -153,7 +154,9 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
 
                                         } else {
                                             console.log('saved........exist');
-                                            res.json(messageViewMapper.success(message,req));
+                                            let msg = messageViewMapper.success(message,req);
+                                            pushManager.sendPushToSpecificTopic(chat._id,msg,message._id,1);
+                                            res.json(msg);
 
                                         }
                                     });
@@ -227,7 +230,9 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
 
                                             } else {
                                                 console.log('saved........exist');
-                                                res.json(messageViewMapper.success(message,req));
+                                                let msg = messageViewMapper.success(message,req);
+                                                pushManager.sendPushToSpecificTopic(chat._id,msg,message._id,1);
+                                                res.json(msg);
                                             }
                                         });
                                 }
@@ -250,6 +255,7 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                 }
                                 else
                                 {
+                                    pushManager.addTopic(newchat._id,newchat.users,[],'ps');
                                     let message= new Message({
                                         receiver_id : receiverId,
                                         type : "text_message",
@@ -272,7 +278,10 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                             newchat.messages.push(message._id);
                                             newchat.save();
                                             console.log('saved......2');
-                                            res.json(messageViewMapper.success(message,req));
+                                            let msg = messageViewMapper.success(message,req);
+                                            //pushManager.sendPushToSpecificUser(user.push_token,msg,1,1,1);
+                                            pushManager.sendPushToSpecificTopic(newchat._id,msg,message._id,1,0);
+                                            res.json(msg);
                                         }
                                     });
                                 }
