@@ -127,7 +127,6 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                     if(chat.users.includes(req.user._id))
                     {
                         let message= new Message({
-                            receiver_id : receiverId,
                             type : "text_message",
                             parse_mode : req.body.parse_mode,
                             reply_to : req.body.reply_to,
@@ -155,7 +154,7 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                         } else {
                                             console.log('saved........exist');
                                             let msg = messageViewMapper.success(message,req);
-                                            pushManager.sendPushToSpecificTopic(chat._id,msg,message._id,1);
+                                            pushManager.sendPushToSpecificTopic(chat._id,msg,message._id);
                                             res.json(msg);
 
                                         }
@@ -203,7 +202,6 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                         {
 
                             let message= new Message({
-                                receiver_id : receiverId,
                                 type : "text_message",
                                 parse_mode : req.body.parse_mode,
                                 reply_to : req.body.reply_to,
@@ -231,7 +229,7 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                             } else {
                                                 console.log('saved........exist');
                                                 let msg = messageViewMapper.success(message,req);
-                                                pushManager.sendPushToSpecificTopic(chat._id,msg,message._id,1);
+                                                pushManager.sendPushToSpecificTopic(chat._id,msg,message._id);
                                                 res.json(msg);
                                             }
                                         });
@@ -255,9 +253,10 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                 }
                                 else
                                 {
-                                    pushManager.addTopic(newchat._id,newchat.users,[],'ps');
+                                    let arr = [req.user.push_token,user.push_token];
+                                    //console.log(arr);
+                                    pushManager.addTopic(newchat._id,arr,['chat'],'s');
                                     let message= new Message({
-                                        receiver_id : receiverId,
                                         type : "text_message",
                                         parse_mode : req.body.parse_mode,
                                         reply_to : req.body.reply_to,
@@ -280,7 +279,7 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                             console.log('saved......2');
                                             let msg = messageViewMapper.success(message,req);
                                             //pushManager.sendPushToSpecificUser(user.push_token,msg,1,1,1);
-                                            pushManager.sendPushToSpecificTopic(newchat._id,msg,message._id,1,0);
+                                            pushManager.sendPushToSpecificTopic(newchat._id,msg,message._id);
                                             res.json(msg);
                                         }
                                     });

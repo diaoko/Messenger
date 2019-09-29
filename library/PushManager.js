@@ -1,58 +1,76 @@
 let request = require('request');
-let pushUrl= 'https://kupush.ga';
+let pushUrl= 'https://kupush.ga/';
 let sendOnePush = function (registrationId, msg,msg_id=0,important=0,ttl=0) {
 
     let options = {
-        url: pushUrl+ '/sender',
+        url: pushUrl+ 'sender',
         method: 'POST',
         json : false,
         form: {
             important: important,
-            messageId: msg_id,
+            messageId: `${msg_id}`,
             ttl: ttl,
             retain:0,
-            username: '1d3d4b2f540b4c18b3b6cfbfad048db8',
+            username: '7f710150fd864dc4bc76e433801e3aca',
             data : JSON.stringify(msg)
         }
     };
 
     function callback(error, response, body) {
         if (!error ) {
-            //console.log("---------------->"+body.code);
-            //console.log("---------------->"+error);
-            //console.log("---------------->"+response.body);
-            //console.log(options);
+
         }
         else {
 
-            //console.log("push error: "+error);
         }
     }
 
     request(options, callback);
 };
-let sendBatchPush = function () {
-
-};
-let sendPushToSpecificTopic = function (topic,msg,msg_id = 0,important = 0,ttl = 0) {
+let sendBatchPush = function (registrationId, msg,msg_id=1,important=0,ttl=9999999999999) {
+    //console.log(registrationId);
     let options = {
-        url: pushUrl+ '/sender/specific',
+        url: pushUrl+ 'sender/many',
         method: 'POST',
-        json : true,
+        qsStringifyOptions: {arrayFormat: 'repeat'},
+        json : false,
         form: {
             important: important,
-            messageId: msg_id,
+            messageId: `${msg_id}`,
+            ttl: ttl,
+            retain:0,
+            username: registrationId,
+            data : JSON.stringify(msg)
+        }
+    };
+    console.log(options.form);
+    function callback(error, response, body) {
+        if (!error ) {
+            console.log(response.body);
+        }
+        else {
+
+        }
+    }
+    request(options, callback);
+};
+let sendPushToSpecificTopic = function (topic,msg,msg_id = 1,important = 0,ttl = 9999999999) {
+    let options = {
+        url: pushUrl+ 'sender/specific',
+        method: 'POST',
+        json : false,
+        form: {
+            important: important,
+            messageId: `${msg_id}`,
             ttl: ttl,
             retain : 0,
-            topic: topic,
+            topic: `${topic}`,
             data : JSON.stringify(msg)
         }
     };
 
     function callback(error, response, body) {
         if (!error ) {
-            //console.log("---------------->"+body.code);
-            console.log("---------------->"+JSON.stringify(response.body));
 
         }
         else {
@@ -65,21 +83,30 @@ let sendPushToSpecificTopic = function (topic,msg,msg_id = 0,important = 0,ttl =
 };
 let addTopic = function(topic,usernames,tags,type){
     let options = {
-        url: pushUrl+ '/sender/addTopic',
+        url: pushUrl+ 'sender/addTopic',
         method: 'POST',
-        json : true,
+        json : false,
         form: {
             username: usernames,
             tag: tags,
-            topic: topic,
-            type : type
+            topic: `${topic}`,
+            type : `${type}`
         }
     };
-
+    console.log(options.form.type);
     function callback(error, response, body) {
         if (!error ) {
-            console.log("=========>"+JSON.stringify(response.body));
+            console.log("add topic =>"+JSON.stringify(response.body));
+            let msg = {
+                type : 191,
+                topic :{
+                    topic : `${response.body}`,
+                    act : type,
+                    tags : tags
+                }
+            };
 
+            sendBatchPush(usernames,msg);
         }
         else {
 
@@ -89,13 +116,13 @@ let addTopic = function(topic,usernames,tags,type){
 
     request(options, callback);
 };
-
 let removeTopic = function(){
 
 };
 module.exports = {
     sendPushToSpecificTopic : sendPushToSpecificTopic ,
     sendPushToSpecificUser : sendOnePush,
+    sendPushToMultipleUser : sendBatchPush,
     addTopic : addTopic
 
 };
