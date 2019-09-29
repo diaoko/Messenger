@@ -91,7 +91,8 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                     mime_type : mimeType.mime,
                                     path: path + filename,
                                     size: req.files.voice.size,
-                                    duration: file_duration
+                                    duration: file_duration,
+                                    file_waveform:req.body.file_waveform
                                 });
                                 file.save(function (err, file) {
                                     let message = new Message({
@@ -196,7 +197,8 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                             mime_type : mimeType.mime,
                                             path: path + filename,
                                             size: req.files.voice.size,
-                                            duration: file_duration
+                                            duration: file_duration,
+                                            file_waveform:req.body.file_waveform
                                         });
                                         file.save(function (err, file) {
                                             let message = new Message({
@@ -282,7 +284,8 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                                         type: 'voice',
                                                         path: path + filename,
                                                         size: req.files.voice.size,
-                                                        duration: file_duration
+                                                        duration: file_duration,
+                                                        file_waveform:req.body.file_waveform
                                                     });
                                                     file.save(function (err, file) {
                                                         if (err) {

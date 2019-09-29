@@ -15,6 +15,7 @@ module.exports.success = (message,req,file) => {
               file_extension : file.ext,
               file_duration : file.duration,
               file_size : file.size,
+              file_waveform : file.file_waveform
 
           }
       }]

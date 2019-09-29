@@ -5,5 +5,6 @@ module.exports.file = file => {
       file_extension : file.ext,
       duration : file.duration,
       file_size : file.size,
+      file_waveform : file.file_waveform
   }
 };

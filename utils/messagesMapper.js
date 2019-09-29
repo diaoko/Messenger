@@ -38,7 +38,8 @@ module.exports.messageViewModel =  messages => {
                 file_type : messages.file.type,
                 file_extension : messages.file.ext,
                 file_duration : messages.file.duration,
-                file_size : messages.file.size
+                file_size : messages.file.size,
+                file_waveform:messages.file.file_waveform
             }
         }
     }

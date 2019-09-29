@@ -8,6 +8,7 @@ let fileSchema = new Schema({
     path : String,
     size : String,
     duration: String,
+    file_waveform:String
 });
 
 module.exports = mongoose.model('File',fileSchema,'Files');
