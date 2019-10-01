@@ -153,8 +153,9 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
 
                                         } else {
                                             console.log('saved........exist');
-                                            let msg = messageViewMapper.success(message,req);
-                                            pushManager.sendPushToSpecificTopic(chat._id,msg,message._id);
+                                            let msg = messageViewMapper.success(chat,message,req,'response');
+                                            let push = messageViewMapper.success(chat,message,req,'push');
+                                            pushManager.sendPushToSpecificTopic(chat._id,push,message._id);
                                             res.json(msg);
 
                                         }
@@ -228,8 +229,10 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
 
                                             } else {
                                                 console.log('saved........exist');
-                                                let msg = messageViewMapper.success(message,req);
-                                                pushManager.sendPushToSpecificTopic(chat._id,msg,message._id);
+
+                                                let msg = messageViewMapper.success(chat,message,req,'response');
+                                                let push = messageViewMapper.success(chat,message,req,'push');
+                                                pushManager.sendPushToSpecificTopic(chat._id,push,message._id);
                                                 res.json(msg);
                                             }
                                         });
@@ -277,9 +280,9 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
                                             newchat.messages.push(message._id);
                                             newchat.save();
                                             console.log('saved......2');
-                                            let msg = messageViewMapper.success(message,req);
-                                            //pushManager.sendPushToSpecificUser(user.push_token,msg,1,1,1);
-                                            pushManager.sendPushToSpecificTopic(newchat._id,msg,message._id);
+                                            let msg = messageViewMapper.success(newchat,message,req,'response');
+                                            let push = messageViewMapper.success(newchat,message,req,'push');
+                                            pushManager.sendPushToSpecificTopic(newchat._id,push,message._id);
                                             res.json(msg);
                                         }
                                     });
