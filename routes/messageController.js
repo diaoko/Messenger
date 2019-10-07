@@ -6,14 +6,17 @@ var File = require('../models/file');
 var User = require('../models/user');
 const auth = require('../middleware/auth');
 let mapper = require('../utils/mapper');
-let messageViewMapper = require('../utils/viewMapper/SendVoiceMessageResponseMapper');
+let pushManager = require('../library/PushManager');
+let voiceMessageViewMapper = require('../utils/viewMapper/SendVoiceMessageResponseMapper');
 const shortid = require('shortid');
 const fs = require('fs');
 const readChunk = require('read-chunk');
 const fileType = require('file-type');
-
-
+let messageMapper = require('../utils/messagesMapper');
+let textMessageViewMapper = require('../utils/viewMapper/SendTextMessageResponseMapper');
+const { check, validationResult } = require('express-validator');
 const { getAudioDurationInSeconds } = require('get-audio-duration');
+
 /* Post Send messages. */
 /**
  * End Point = /v1/sendVoiceMessage
@@ -49,7 +52,6 @@ const { getAudioDurationInSeconds } = require('get-audio-duration');
 router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
     if(req.body.receiver_id==null || req.body.reply_to==null)
     {
-
 
     }
     let receiverId = `${req.body.receiver_id}`;
@@ -121,7 +123,10 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
 
                                                     } else {
                                                         console.log('saved........exist');
-                                                        res.json(messageViewMapper.success(message,req,file));
+                                                        let msg = voiceMessageViewMapper.success(chat,message,req,file,'response');
+                                                        let push = voiceMessageViewMapper.success(chat,message,req,file,'push');
+                                                        pushManager.sendPushToSpecificTopic(chat._id,push,message._id);
+                                                        res.json(msg);
 
                                                     }
                                                 });
@@ -227,7 +232,10 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
 
                                                             } else {
                                                                 console.log('saved........exist');
-                                                                res.json(messageViewMapper.success(message,req,file));
+                                                                let msg = voiceMessageViewMapper.success(chat,message,req,file,'response');
+                                                                let push = voiceMessageViewMapper.success(chat,message,req,file,'push');
+                                                                pushManager.sendPushToSpecificTopic(chat._id,push,message._id);
+                                                                res.json(msg);
 
                                                             }
                                                         });
@@ -260,6 +268,8 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
                                     console.log("error 2")
                                 }
                                 else {
+                                    let arr = [req.user.push_token,user.push_token];
+                                    pushManager.addTopic(newchat._id,arr,['chat'],'s');
                                     let voice = req.files.voice;
                                     let filename = (Math.floor(new Date() / 1000)) + '_' + shortid.generate() + '_' + voice.name;
                                     const path = './public/upfiles/voice/';
@@ -310,8 +320,10 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
 
                                                                     newchat.messages.push(message._id);
                                                                     newchat.save();
-                                                                    console.log('saved......2');
-                                                                    res.json(messageViewMapper.success(message,req,file));
+                                                                    let msg = voiceMessageViewMapper.success(newchat,message,req,file,'response');
+                                                                    let push = voiceMessageViewMapper.success(newchat,message,req,file,'push');
+                                                                    pushManager.sendPushToSpecificTopic(newchat._id,push,message._id);
+                                                                    res.json(msg);
                                                                 }
                                                             });
                                                         }

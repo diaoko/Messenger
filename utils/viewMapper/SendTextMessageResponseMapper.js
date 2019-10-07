@@ -2,7 +2,7 @@ module.exports.success = (chat,message,req,type) => {
   if(type==='push')
   {
       return {
-          type:101,
+          type:501,
           conversations :[{
                   message_id: message.id,
                   type : message.type,
