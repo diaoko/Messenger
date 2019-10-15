@@ -2,11 +2,13 @@ var express = require('express');
 var router = express.Router();
 let request = require('request');
 let User = require('../models/user');
+let Chat = require('../models/chat');
 let File = require('../models/file');
 const readChunk = require('read-chunk');
 const fileType = require('file-type');
 const shortid = require('shortid');
 const auth = require('../middleware/auth');
+let pushManager = require('../library/PushManager');
 /* GET users listing. */
 router.post('/v1/User/RequestOTP', function(req, res, next) {
     if(req.body.mobile===undefined || req.body.mobile===null || req.body.mobile==='')
