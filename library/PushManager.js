@@ -151,6 +151,44 @@ let addTopic = function(topic,usernames,tags,type){
 
     request(options, callback);
 };
+
+let addManyTopic = async function (topics,username,tags,type) {
+    var data = await Promise.all(topics)
+    let options = {
+        url: pushUrl+ 'sender/addTopic',
+        qsStringifyOptions: {arrayFormat: 'repeat'},
+        method: 'POST',
+        json : false,
+        form: {
+            username: usernames,
+            tag: tags,
+            topic: `${topic}`,
+            type : `${type}`
+        }
+    };
+    console.log(options.form.type);
+    function callback(error, response, body) {
+        if (!error ) {
+            console.log("add topic =>"+JSON.stringify(response.body));
+            let msg = {
+                type : 191,
+                topic :{
+                    topic : `${response.body}`,
+                    act : type,
+                    tags : tags
+                }
+            };
+
+            sendBatchPush(usernames,msg);
+            let push = new Push({
+                push : msg
+            });
+            push.save(function (err, push) {
+                if (err) {
+
+                }
+                else {}
+            });
         }
         else {
 
@@ -162,6 +200,13 @@ let addTopic = function(topic,usernames,tags,type){
 };
 let removeTopic = function(){
 
+};
+const start = async (topics) => {
+    await asyncForEach(topics, async (num) => {
+        await waitFor(50);
+        console.log(num);
+    });
+    console.log('Done');
 };
 module.exports = {
     sendPushToSpecificTopic : sendPushToSpecificTopic ,
