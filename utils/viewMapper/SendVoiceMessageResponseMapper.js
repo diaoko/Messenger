@@ -9,7 +9,10 @@ module.exports.success = (chat,message,req,file,type) => {
                 date: Math.round(new Date(message.createdAt).getTime()),
                 chat:{
                     chat_id:chat._id,
-                    type:chat.type
+                    type:chat.type,
+                    username:req.user.username,
+                    first_name:req.user.first_name,
+                    last_name:req.user.last_name
                 },
                 from: {
                     id : req.user._id,
