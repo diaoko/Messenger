@@ -9,7 +9,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 
-var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/userController');
 var messagesRouter = require('./routes/messageController');
 var fileRouter = require('./routes/fileController');
@@ -48,7 +47,6 @@ app.use(cors());
 // adding morgan to log HTTP requests
 app.use(morgan('combined'));
 
-app.use('/', indexRouter);
 app.use('/', usersRouter);
 app.use('/', messagesRouter);
 app.use('/', fileRouter);
