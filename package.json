@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test" :"mocha"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -12,6 +13,7 @@
     "cors": "^2.8.5",
     "curl-request": "^1.1.1",
     "debug": "~2.6.9",
+    "dotenv": "^8.1.0",
     "express": "^4.16.4",
     "express-fileupload": "^1.1.5",
     "express-validator": "^6.2.0",
@@ -20,9 +22,10 @@
     "helmet": "^3.20.0",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-    "mocha": "^6.2.0",
+    "mocha": "^6.2.1",
     "mongoose": "^5.6.10",
     "morgan": "^1.9.1",
+    "mqtt": "^3.0.0",
     "nodemon": "^1.19.1",
     "nyc": "^14.1.1",
     "read-chunk": "^3.2.0",
