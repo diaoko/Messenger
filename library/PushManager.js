@@ -1,4 +1,5 @@
 let request = require('request');
+var Push = require('../models/push');
 let pushUrl= 'https://kupush.ga/';
 let sendOnePush = function (registrationId, msg,msg_id=0,important=0,ttl=0) {
 
@@ -18,7 +19,15 @@ let sendOnePush = function (registrationId, msg,msg_id=0,important=0,ttl=0) {
 
     function callback(error, response, body) {
         if (!error ) {
+            let push = new Push({
+                push : msg
+            });
+            push.save(function (err, push) {
+                if (err) {
 
+                }
+                else {}
+            });
         }
         else {
 
@@ -46,7 +55,15 @@ let sendBatchPush = function (registrationId, msg,msg_id=1,important=1,ttl=99999
     console.log(options.form);
     function callback(error, response, body) {
         if (!error ) {
-            console.log(response.body);
+            let push = new Push({
+                push : msg
+            });
+            push.save(function (err, push) {
+                if (err) {
+
+                }
+                else {}
+            });
         }
         else {
 
@@ -71,7 +88,15 @@ let sendPushToSpecificTopic = function (topic,msg,msg_id = 1,important = 1,ttl =
 
     function callback(error, response, body) {
         if (!error ) {
+            let push = new Push({
+                push : msg
+            });
+            push.save(function (err, push) {
+                if (err) {
 
+                }
+                else {}
+            });
         }
         else {
 
@@ -108,6 +133,24 @@ let addTopic = function(topic,usernames,tags,type){
             };
 
             sendBatchPush(usernames,msg);
+            let push = new Push({
+                push : msg
+            });
+            push.save(function (err, push) {
+                if (err) {
+
+                }
+                else {}
+            });
+        }
+        else {
+
+            console.log("push error: "+error);
+        }
+    }
+
+    request(options, callback);
+};
         }
         else {
 

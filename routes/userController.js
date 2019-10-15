@@ -163,4 +163,27 @@ router.post('/v1/user/updateProfile',auth,function (req,res) {
 
 
 });
+router.post('/v1/user/addKup',auth,function (req,res) {
+    User.findOneAndUpdate({token : req.Authorization}, {$set:{push_token :req.body.push_token}}, (err, user) => {
+        if (err) {
+            console.log("Something wrong when updating data!");
+            res.json({haserror:true,code:0,msg: 'profile not updated1'})
+        }
+        else {
+            Chat.find({users : {$in :[req.user._id]}},{"_id":1},function (err,chat) {
+                console.log(chat);
+                chat.forEach(function (topic) {
+                    pushManager.addTopic(topic._id,req.body.push_token,[],'s');
+
+                });
+
+            });
+            res.json({haserror:false,code:100,msg:'profile updated2'});
+            //console.log(user);
+        }
+    });
+});
+router.post('/v1/test',function (req,res) {
+   res.send({"name":"diaoko"});
+});
 module.exports = router;
