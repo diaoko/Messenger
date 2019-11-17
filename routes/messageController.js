@@ -462,91 +462,18 @@ router.post('/v1/sendTextMessage',[
     }
     else
     {
-        Chat.findOne({ _id:  receiverId },function (err,chat) {
-            if(err)
-            {
-                res.json({haserror:true,code:0,msg:'id not valid'})
-            }
-            else if(chat)
-            {
-                if(chat.users.includes(req.user._id))
+        var receiverId = `${req.body.receiver_id}`;
+        if(receiverId.match(/^[0-9a-fA-F]{24}$/))
+        {
+            Chat.findOne({ _id:  receiverId },function (err,chat) {
+                if(err)
                 {
-                    let message= new Message({
-                        type : "text_message",
-                        parse_mode : req.body.parse_mode,
-                        reply_to : req.body.reply_to,
-                        sender_id : req.user._id,
-                        text_message : {
-                            text: req.body.text
-                        },
-                    });
-                    message.save(function (err) {
-                        if(err)
-                        {
-                            console.log('error1');
-                            res.json({haserror:true,code:0});
-                        }
-                        else {
-                            let message_id = [message._id];
-                            Chat.findOneAndUpdate(
-                                { _id: chat._id },
-                                { $push: { messages: message_id  } },
-                                function (error, success) {
-                                    if (error) {
-                                        console.log('error.........');
-                                        res.json({haserror:true,code:1});
-
-                                    } else {
-                                        console.log('saved........exist');
-                                        let msg = textMessageViewMapper.success(chat,message,req,'response');
-                                        let push = textMessageViewMapper.success(chat,message,req,'push');
-                                        pushManager.sendPushToSpecificTopic(chat._id,push,message._id);
-                                        res.json(msg);
-
-                                    }
-                                });
-                        }
-
-                    });
-
+                    res.json({haserror:true,code:0,msg:'id not valid'})
                 }
-                else
+                else if(chat)
                 {
-                    res.json({haserror:true,code:3,msg:'receiver person not found'});
-                }
-            }
-            else
-            {
-                res.json({haserror:true,code:3,msg:'chat not found'});
-            }
-        });
-    }
-    else
-    {
-        User.findOne({id:receiverId},function(err,user){
-            if(err)
-            {
-
-            }
-            else if(user)
-            {
-                receiverId = user._id;
-                Chat.findOne({type : 'private' ,
-                    $and :
-                        [
-                            {
-                                users : {$in :[receiverId]}
-                            },
-                            {
-                                users : {$in :[req.user._id]}
-                            }
-                        ]
-                } , function (err,chat) {
-                    console.log(chat);
-
-                    if(chat!==null)
+                    if(chat.users.includes(req.user._id))
                     {
-
                         let message= new Message({
                             type : "text_message",
                             parse_mode : req.body.parse_mode,
@@ -574,74 +501,152 @@ router.post('/v1/sendTextMessage',[
 
                                         } else {
                                             console.log('saved........exist');
-
                                             let msg = textMessageViewMapper.success(chat,message,req,'response');
                                             let push = textMessageViewMapper.success(chat,message,req,'push');
                                             pushManager.sendPushToSpecificTopic(chat._id,push,message._id);
                                             res.json(msg);
+
                                         }
                                     });
                             }
 
                         });
+
                     }
                     else
                     {
-                        let newchat = new Chat({
-                            channel_id : "lvndfv34343jn43kn433333333333333333333",
-                            type : "private",
-                            messages : [],
-                            users : [req.user._id,receiverId]
-                        });
-
-                        newchat.save(function (err) {
-                            if(err)
-                            {
-                                console.log("error 2")
-                            }
-                            else
-                            {
-                                let arr = [req.user.push_token,user.push_token];
-                                //console.log(arr);
-                                pushManager.addTopic(newchat._id,arr,['chat'],'s');
-                                let message= new Message({
-                                    type : "text_message",
-                                    parse_mode : req.body.parse_mode,
-                                    reply_to : req.body.reply_to,
-                                    sender_id : req.user._id,
-                                    text_message : {
-                                        text: req.body.text
-                                    },
-                                });
-                                message.save(function (err) {
-                                    if(err)
-                                    {
-                                        console.log('error2');
-                                        res.json({haserror:true,code:0});
-                                    }
-                                    else
-                                    {
-
-                                        newchat.messages.push(message._id);
-                                        newchat.save();
-                                        console.log('saved......2');
-                                        let msg = textMessageViewMapper.success(newchat,message,req,'response');
-                                        let push = textMessageViewMapper.success(newchat,message,req,'push');
-                                        pushManager.sendPushToSpecificTopic(newchat._id,push,message._id);
-                                        res.json(msg);
-                                    }
-                                });
-                            }
-                        })
+                        res.json({haserror:true,code:3,msg:'receiver person not found'});
                     }
-                });
-            }
-            else {
-                res.json({haserror:true,code:3,msg:'receiver not found'});
-            }
+                }
+                else
+                {
+                    res.json({haserror:true,code:3,msg:'chat not found'});
+                }
+            });
+        }
+        else
+        {
+            User.findOne({id:receiverId},function(err,user){
+                if(err)
+                {
 
-        });
+                }
+                else if(user)
+                {
+                    receiverId = user._id;
+                    Chat.findOne({type : 'private' ,
+                        $and :
+                            [
+                                {
+                                    users : {$in :[receiverId]}
+                                },
+                                {
+                                    users : {$in :[req.user._id]}
+                                }
+                            ]
+                    } , function (err,chat) {
+                        console.log(chat);
+
+                        if(chat!==null)
+                        {
+
+                            let message= new Message({
+                                type : "text_message",
+                                parse_mode : req.body.parse_mode,
+                                reply_to : req.body.reply_to,
+                                sender_id : req.user._id,
+                                text_message : {
+                                    text: req.body.text
+                                },
+                            });
+                            message.save(function (err) {
+                                if(err)
+                                {
+                                    console.log('error1');
+                                    res.json({haserror:true,code:0});
+                                }
+                                else {
+                                    let message_id = [message._id];
+                                    Chat.findOneAndUpdate(
+                                        { _id: chat._id },
+                                        { $push: { messages: message_id  } },
+                                        function (error, success) {
+                                            if (error) {
+                                                console.log('error.........');
+                                                res.json({haserror:true,code:1});
+
+                                            } else {
+                                                console.log('saved........exist');
+
+                                                let msg = textMessageViewMapper.success(chat,message,req,'response');
+                                                let push = textMessageViewMapper.success(chat,message,req,'push');
+                                                pushManager.sendPushToSpecificTopic(chat._id,push,message._id);
+                                                res.json(msg);
+                                            }
+                                        });
+                                }
+
+                            });
+                        }
+                        else
+                        {
+                            let newchat = new Chat({
+                                channel_id : "lvndfv34343jn43kn433333333333333333333",
+                                type : "private",
+                                messages : [],
+                                users : [req.user._id,receiverId]
+                            });
+
+                            newchat.save(function (err) {
+                                if(err)
+                                {
+                                    console.log("error 2")
+                                }
+                                else
+                                {
+                                    let arr = [req.user.push_token,user.push_token];
+                                    //console.log(arr);
+                                    pushManager.addTopic(newchat._id,arr,['chat'],'s');
+                                    let message= new Message({
+                                        type : "text_message",
+                                        parse_mode : req.body.parse_mode,
+                                        reply_to : req.body.reply_to,
+                                        sender_id : req.user._id,
+                                        text_message : {
+                                            text: req.body.text
+                                        },
+                                    });
+                                    message.save(function (err) {
+                                        if(err)
+                                        {
+                                            console.log('error2');
+                                            res.json({haserror:true,code:0});
+                                        }
+                                        else
+                                        {
+
+                                            newchat.messages.push(message._id);
+                                            newchat.save();
+                                            console.log('saved......2');
+                                            let msg = textMessageViewMapper.success(newchat,message,req,'response');
+                                            let push = textMessageViewMapper.success(newchat,message,req,'push');
+                                            pushManager.sendPushToSpecificTopic(newchat._id,push,message._id);
+                                            res.json(msg);
+                                        }
+                                    });
+                                }
+                            })
+                        }
+                    });
+                }
+                else {
+                    res.json({haserror:true,code:3,msg:'receiver not found'});
+                }
+
+            });
+        }
     }
+
 
 
 
