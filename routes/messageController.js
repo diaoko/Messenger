@@ -16,7 +16,7 @@ let messageMapper = require('../utils/messagesMapper');
 let textMessageViewMapper = require('../utils/viewMapper/SendTextMessageResponseMapper');
 const { check, validationResult } = require('express-validator');
 const { getAudioDurationInSeconds } = require('get-audio-duration');
-
+const moment = require('moment');
 /* Post Send messages. */
 /**
  * End Point = /v1/sendVoiceMessage
