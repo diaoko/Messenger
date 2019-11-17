@@ -687,12 +687,29 @@ router.post('/v1/getMessages',[
     }
     else
     {
+        let query_string = {};
+        let count= 10;
+        if(check('direction').isNumeric() && check('date').isNumeric())
+        {
+
+            let date= new moment.unix(req.body.date/1000).format();
+            if(req.body.direction==='1')
+                query_string = {'createdAt': {$gt:date}};
+            else if(req.body.direction==='-1')
+                query_string = {'createdAt': {$lt:date}};
+        }
+        if(check('count').isNumeric())
+        {
+            count = req.body.count;
+        }
         Chat
             .findOne({_id : req.body.chat_id})
             .populate({
                     path: 'messages',
+                    match : query_string,
                     options : {
-                        sort: { 'createdAt': 1 }
+                        limit :count,
+                        sort: { 'createdAt': -1 }
                     },
                     populate : {
                         path : 'file',
