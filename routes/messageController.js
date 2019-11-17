@@ -451,10 +451,16 @@ router.post('/v1/getAllChats',auth, function(req, res, next) {
 }
  *
  */
-router.post('/v1/sendTextMessage',auth, function(req, res, next) {
-
-    var receiverId = `${req.body.receiver_id}`;
-    if(receiverId.match(/^[0-9a-fA-F]{24}$/))
+router.post('/v1/sendTextMessage',[
+    auth,
+    check('receiver_id').isLength({min:3}).isAlphanumeric().withMessage('Must be string and not empty'),
+    check('text').isLength({min:1}).withMessage('text field should not empty'),
+], function(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({haserror:true,code:0,errors: errors.array() })
+    }
+    else
     {
         Chat.findOne({ _id:  receiverId },function (err,chat) {
             if(err)
@@ -671,10 +677,13 @@ router.post('/v1/sendTextMessage',auth, function(req, res, next) {
 }
  *
  */
-router.post('/v1/getMessages',auth,function (req,res,next) {
-    if(req.body.chat_id===undefined || req.body.chat_id==='' || req.body.chat_id===null)
-    {
-        res.send({haserror:true,code:0,msg:'invalid input'});
+router.post('/v1/getMessages',[
+    auth,
+    check('chat_id').isAlphanumeric().withMessage('Must be string and not empty'),
+],function (req,res,next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({haserror:true,code:0,errors: errors.array() })
     }
     else
     {

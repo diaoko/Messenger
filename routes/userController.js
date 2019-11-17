@@ -9,6 +9,7 @@ const fileType = require('file-type');
 const shortid = require('shortid');
 const auth = require('../middleware/auth');
 let pushManager = require('../library/PushManager');
+const { check, validationResult } = require('express-validator');
 /* GET users listing. */
 router.post('/v1/User/RequestOTP', function(req, res, next) {
     if(req.body.mobile===undefined || req.body.mobile===null || req.body.mobile==='')
@@ -38,10 +39,13 @@ router.post('/v1/User/RequestOTP', function(req, res, next) {
 
     request(options, callback);
 });
-router.post('/v1/User/Login',function (req,res,next) {
-    if(req.body.mobile===undefined || req.body.mobile===null || req.body.mobile==='' || req.body.otp===undefined || req.body.otp===null || req.body.otp==='')
-    {
-        res.send({haserror:true,code:0,msg:'invalid input'});
+router.post('/v1/User/Login',[
+    check('mobile').isAlphanumeric().withMessage('Must be string and not empty'),
+    check('otp').isNumeric().withMessage('Must be number'),
+],function (req,res,next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({haserror:true,code:0,errors: errors.array() })
     }
     else
     {
