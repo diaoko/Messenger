@@ -725,7 +725,7 @@ router.post('/v1/getMessages',[
             .exec(function (err, chat) {
                 console.log(chat);
                 if(chat!=null)
-                    res.json({conversations:chat.messages.map(messageMapper.messageViewModel)});
+                    res.json({conversation_id:chat._id,conversations:chat.messages.map(messageMapper.messageViewModel)});
                 else
                     res.json({hasserror:true,code:11,msg: 'chat not found...'})
                 // Stores with items
