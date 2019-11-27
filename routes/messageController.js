@@ -145,7 +145,199 @@ router.post('/v1/sendVoiceMessage',auth,function (req,res,next) {
             }
             else
             {
-                res.json({haserror:true,code:4,msg:'chat not found'});
+                User.findOne({_id:receiverId},function(err,user) {
+                    if (err) {
+
+                    }
+                    if(user)
+                    {
+                        receiverId = user._id;
+                        Chat.findOne({
+                            type: 'private',
+                            $and:
+                                [
+                                    {
+                                        users: {$in: [receiverId]}
+                                    },
+                                    {
+                                        users: {$in: [senderId]}
+                                    }
+                                ]
+                        }, function (err, chat) {
+                            console.log(chat);
+                            console.log(err);
+                            if (chat !== null) {
+
+                                let voice = req.files.voice;
+                                let filename = (Math.floor(new Date() / 1000)) + '_' + shortid.generate() + '_' + voice.name;
+                                const path = './public/upfiles/voice/';
+
+                                fs.access(path + filename, fs.F_OK, (err) => {
+                                    if (err) {
+
+                                    }
+                                    else {
+                                        console.log('file exist');
+                                    }
+                                    // file exists
+                                    voice.mv(path + filename, function (err) {
+                                        if (err)
+                                            return res.status(500).send(err);
+                                        else {
+                                            var file_duration = 0;
+                                            getAudioDurationInSeconds(path + filename).then((duration) => {
+                                                const buffer = readChunk.sync(path+filename, 0, fileType.minimumBytes);
+
+                                                let mimeType = fileType(buffer);
+                                                file_duration = Math.round(duration);
+                                                let file = new File({
+                                                    type: 'voice',
+                                                    ext : mimeType.ext,
+                                                    mime_type : mimeType.mime,
+                                                    path: path + filename,
+                                                    size: req.files.voice.size,
+                                                    duration: file_duration,
+                                                    file_waveform:req.body.file_waveform
+                                                });
+                                                file.save(function (err, file) {
+                                                    let message = new Message({
+                                                        receiver_id: req.body.receiver_id,
+                                                        type: "voice_message",
+                                                        parse_mode: req.body.parse_mode,
+                                                        reply_to: req.body.reply_to,
+                                                        sender_id: req.user._id,
+                                                        file: file._id
+
+                                                    });
+                                                    message.save(function (err) {
+                                                        if (err) {
+                                                            console.log('error1');
+                                                            res.json({haserror: true, code: 0});
+                                                        }
+                                                        else {
+                                                            let message_id = [message._id];
+                                                            Chat.findOneAndUpdate(
+                                                                {_id: chat._id},
+                                                                {$push: {messages: message_id}},
+                                                                function (error, success) {
+                                                                    if (error) {
+                                                                        console.log('error.........');
+                                                                        res.json({haserror: true, code: 1});
+
+                                                                    } else {
+                                                                        console.log('saved........exist');
+                                                                        let msg = voiceMessageViewMapper.success(chat,message,req,file,'response');
+                                                                        let push = voiceMessageViewMapper.success(chat,message,req,file,'push');
+                                                                        pushManager.sendPushToSpecificTopic(chat._id,push,message._id);
+                                                                        res.json(msg);
+
+                                                                    }
+                                                                });
+                                                        }
+
+                                                        //chat.messages.push(message._id);
+                                                        //chat.save();
+                                                    });
+                                                    //res.status(400).send({haserror: false, code: 100});
+                                                });
+                                            });
+
+                                        }
+
+                                    });
+
+                                });
+
+                            }
+                            else {
+                                let newchat = new Chat({
+                                    channel_id: "lvndfv34343jn43kn43",
+                                    type: "private",
+                                    messages: [],
+                                    users: [senderId, receiverId]
+                                });
+
+                                newchat.save(function (err) {
+                                        if (err) {
+                                            console.log("error 2")
+                                        }
+                                        else {
+                                            let arr = [req.user.push_token,user.push_token];
+                                            pushManager.addTopic(newchat._id,arr,['chat'],'s');
+                                            let voice = req.files.voice;
+                                            let filename = (Math.floor(new Date() / 1000)) + '_' + shortid.generate() + '_' + voice.name;
+                                            const path = './public/upfiles/voice/';
+
+                                            fs.access(path + filename, fs.F_OK, (err) => {
+                                                if (err) {
+
+                                                }
+                                                else {
+                                                    console.log('file exist');
+                                                }
+                                                // file exists
+                                                voice.mv(path + filename, function (err) {
+                                                    if (err)
+                                                        return res.status(500).send(err);
+                                                    else {
+                                                        let file_duration = 0;
+                                                        getAudioDurationInSeconds(path + filename).then((duration) => {
+                                                            file_duration = Math.round(duration);
+
+                                                            let file = new File({
+                                                                type: 'voice',
+                                                                path: path + filename,
+                                                                size: req.files.voice.size,
+                                                                duration: file_duration,
+                                                                file_waveform:req.body.file_waveform
+                                                            });
+                                                            file.save(function (err, file) {
+                                                                if (err) {
+
+                                                                }
+                                                                else {
+                                                                    let message = new Message({
+                                                                        receiver_id: req.body.receiver_id,
+                                                                        type: "voice_message",
+                                                                        parse_mode: req.body.parse_mode,
+                                                                        reply_to: req.body.reply_to,
+                                                                        sender_id: req.user._id,
+                                                                        file: file._id
+
+                                                                    });
+                                                                    message.save(function (err) {
+                                                                        if (err) {
+                                                                            console.log('error1');
+                                                                            res.json({haserror: true, code: 0});
+                                                                        }
+                                                                        else {
+
+                                                                            newchat.messages.push(message._id);
+                                                                            newchat.save();
+                                                                            let msg = voiceMessageViewMapper.success(newchat,message,req,file,'response');
+                                                                            let push = voiceMessageViewMapper.success(newchat,message,req,file,'push');
+                                                                            pushManager.sendPushToSpecificTopic(newchat._id,push,message._id);
+                                                                            res.json(msg);
+                                                                        }
+                                                                    });
+                                                                }
+                                                            });
+                                                        });
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    }
+                                );
+                            }
+                        });
+                    }
+                    else
+                    {
+                        res.json({haserror:true,code:4,msg:'receiver not found'});
+                    }
+                });
+                //res.json({haserror:true,code:4,msg:'chat not found'});
             }
         });
     }
@@ -520,7 +712,124 @@ router.post('/v1/sendTextMessage',[
                 }
                 else
                 {
-                    res.json({haserror:true,code:3,msg:'chat not found'});
+                    User.findOne({_id:receiverId},function(err,user){
+                        if(err)
+                        {
+
+                        }
+                        else if(user)
+                        {
+                            receiverId = user._id;
+                            Chat.findOne({type : 'private' ,
+                                $and :
+                                    [
+                                        {
+                                            users : {$in :[receiverId]}
+                                        },
+                                        {
+                                            users : {$in :[req.user._id]}
+                                        }
+                                    ]
+                            } , function (err,chat) {
+                                console.log(chat);
+
+                                if(chat!==null)
+                                {
+
+                                    let message= new Message({
+                                        type : "text_message",
+                                        parse_mode : req.body.parse_mode,
+                                        reply_to : req.body.reply_to,
+                                        sender_id : req.user._id,
+                                        text_message : {
+                                            text: req.body.text
+                                        },
+                                    });
+                                    message.save(function (err) {
+                                        if(err)
+                                        {
+                                            console.log('error1');
+                                            res.json({haserror:true,code:0});
+                                        }
+                                        else {
+                                            let message_id = [message._id];
+                                            Chat.findOneAndUpdate(
+                                                { _id: chat._id },
+                                                { $push: { messages: message_id  } },
+                                                function (error, success) {
+                                                    if (error) {
+                                                        console.log('error.........');
+                                                        res.json({haserror:true,code:1});
+
+                                                    } else {
+                                                        console.log('saved........exist');
+
+                                                        let msg = textMessageViewMapper.success(chat,message,req,'response');
+                                                        let push = textMessageViewMapper.success(chat,message,req,'push');
+                                                        pushManager.sendPushToSpecificTopic(chat._id,push,message._id);
+                                                        res.json(msg);
+                                                    }
+                                                });
+                                        }
+
+                                    });
+                                }
+                                else
+                                {
+                                    let newchat = new Chat({
+                                        channel_id : "lvndfv34343jn43kn433333333333333333333",
+                                        type : "private",
+                                        messages : [],
+                                        users : [req.user._id,receiverId]
+                                    });
+
+                                    newchat.save(function (err) {
+                                        if(err)
+                                        {
+                                            console.log("error 2")
+                                        }
+                                        else
+                                        {
+                                            let arr = [req.user.push_token,user.push_token];
+                                            //console.log(arr);
+                                            pushManager.addTopic(newchat._id,arr,['chat'],'s');
+                                            let message= new Message({
+                                                type : "text_message",
+                                                parse_mode : req.body.parse_mode,
+                                                reply_to : req.body.reply_to,
+                                                sender_id : req.user._id,
+                                                text_message : {
+                                                    text: req.body.text
+                                                },
+                                            });
+                                            message.save(function (err) {
+                                                if(err)
+                                                {
+                                                    console.log('error2');
+                                                    res.json({haserror:true,code:0});
+                                                }
+                                                else
+                                                {
+
+                                                    newchat.messages.push(message._id);
+                                                    newchat.save();
+                                                    console.log('saved......2');
+                                                    let msg = textMessageViewMapper.success(newchat,message,req,'response');
+                                                    let push = textMessageViewMapper.success(newchat,message,req,'push');
+                                                    pushManager.sendPushToSpecificTopic(newchat._id,push,message._id);
+                                                    res.json(msg);
+                                                }
+                                            });
+                                        }
+                                    })
+                                }
+                            });
+                        }
+                        else {
+                            res.json({haserror:true,code:3,msg:'receiver not found'});
+                        }
+
+                    });
                 }
             });
         }
