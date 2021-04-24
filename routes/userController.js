@@ -17,7 +17,7 @@ router.post('/v1/User/RequestOTP', function(req, res, next) {
         res.send({haserror:true,code:0,msg:'Mobile number required'});
     }
     let options = {
-        url: 'https://auth.kubakbank.com/v1/RequestOTP',
+        url: 'https://auth.kbkbank.com/v1/RequestOTP',
         method: 'POST',
         json : true,
         form: {
@@ -50,7 +50,7 @@ router.post('/v1/User/Login',[
     else
     {
         let options = {
-            url: 'https://auth.kubakbank.com/v1/Login',
+            url: 'https://auth.kbkbank.com/v1/Login',
             method: 'POST',
             json : true,
             form: {
