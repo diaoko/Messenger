@@ -18,17 +18,17 @@
     }
 };*/
 var message = require('./messagesMapper');
-module.exports.chatviewmodel = chat=>{
+module.exports.chatviewmodel = chat => {
     return {
-        id : chat._id,
-        type : 'private',
-        first_name : chat.users[0].first_name,
+        id: chat._id,
+        type: 'private',
+        first_name: chat.users[0].first_name,
         last_name: chat.users[0].last_name,
-        unread_messages : 12,
-        chat_photo : {
-          small_file_id : chat.users[0].avatars[0],
-          large_file_id : chat.users[0].avatars[0],
+        unread_messages: 12,
+        chat_photo: {
+            small_file_id: chat.users[0].avatars[0],
+            large_file_id: chat.users[0].avatars[0],
         },
-            conversations: chat.messages.map(message.messageViewModel)
+        conversations: chat.messages.map(message.messageViewModel)
     }
 };

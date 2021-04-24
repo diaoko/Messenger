@@ -11,16 +11,15 @@ const auth = require('../middleware/auth');
  *  example : v1/getFileById/5d6b6d118446212a783d6393
  *
  */
-router.get('/v1/getFileById/:id',auth,function (req,res,next) {
-    if(req.params.id==null)
-        res.json({haserror:true,code:404,msg: 'file not found'});
-    else
-    {
-        myFile.findOne({_id : req.params.id}).exec(function (err,file) {
-            if(file)
+router.get('/v1/getFileById/:id', auth, function (req, res, next) {
+    if (req.params.id == null)
+        res.json({ haserror: true, code: 404, msg: 'file not found' });
+    else {
+        myFile.findOne({ _id: req.params.id }).exec(function (err, file) {
+            if (file)
                 res.download(file.path);
             else
-                res.json({haserror:true,code:404,msg: 'file not found'});
+                res.json({ haserror: true, code: 404, msg: 'file not found' });
         });
     }
 

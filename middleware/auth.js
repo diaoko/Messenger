@@ -1,9 +1,9 @@
 const User = require('../models/user');
-const auth = async(req, res, next) => {
+const auth = async (req, res, next) => {
     const token = req.header('Authorization');
 
     try {
-        const user = await User.findOne({'token': token });
+        const user = await User.findOne({ 'token': token });
         if (!user) {
             throw new Error()
         }
@@ -11,7 +11,7 @@ const auth = async(req, res, next) => {
         req.Authorization = token;
         next()
     } catch (error) {
-        res.status(401).send({haserror:true,code:99, msg: 'Access Denied' })
+        res.status(401).send({ haserror: true, code: 99, msg: 'Access Denied' })
     }
 
 };
