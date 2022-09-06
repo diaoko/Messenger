@@ -185,4 +185,7 @@ router.post('/v1/user/addKup', auth, function (req, res) {
 router.post('/v1/test', function (req, res) {
     res.send({ "name": "diaoko" });
 });
+router.get('/v1/testApp', function (req, res) {
+    res.send({ "name": "diaoko" });
+});
 module.exports = router;
